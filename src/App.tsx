@@ -1,5 +1,6 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Header from './components/Header';
 import HomeView from './components/HomeView';
 import ShopView from './components/ShopView';
@@ -10,8 +11,30 @@ import CartDrawer from './components/CartDrawer';
 import { ViewType, Product, CartItem } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 
+const pathToView: Record<string, ViewType> = {
+  '/': 'home',
+  '/shop': 'shop',
+  '/story': 'story',
+  '/journal': 'journal',
+  '/contact': 'contact',
+};
+
+const viewToPath: Record<ViewType, string> = {
+  home: '/',
+  shop: '/shop',
+  story: '/story',
+  journal: '/journal',
+  contact: '/contact',
+};
+
 export default function App() {
-  const [view, setView] = useState<ViewType>('home');
+  const router = useRouter();
+  const pathname = usePathname();
+  const view: ViewType = pathToView[pathname] ?? 'home';
+
+  const setView = useCallback((newView: ViewType) => {
+    router.push(viewToPath[newView]);
+  }, [router]);
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'produce' | 'pantry' | 'meals'>('all');
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
