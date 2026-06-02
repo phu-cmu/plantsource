@@ -1,0 +1,6 @@
+{
+  "name": "Plantsource Wholesale",
+  "description": "A luxury vegan organic store, sourcing philosophy, and wellness journal focusing on purity in every bite.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
