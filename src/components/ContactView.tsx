@@ -53,10 +53,12 @@ export default function ContactView() {
           {/* Left info box columns */}
           <div className="lg:col-span-5 bg-[#1A4233]/15 border border-white/5 rounded-3xl p-8 md:p-12 space-y-10 flex flex-col justify-between">
             <div className="space-y-6">
-              <h3 className="font-serif text-2xl text-white font-semibold">HQ Botanical Chambers</h3>
-              <p className="font-sans text-xs md:text-sm text-[#c1c8c2] leading-relaxed font-light">
-                Our main processing greenhouse operates on absolute circular biology. Visitation requests must be submitted 14 days in advance.
-              </p>
+              <h3 className="font-serif text-2xl text-white font-semibold">Store Hours</h3>
+              <div className="font-sans text-xs md:text-sm text-[#c1c8c2] leading-relaxed font-light space-y-1">
+                <p>Monday to Friday</p>
+                <p>8:30 a.m. to 4:30 p.m.</p>
+                <p className="text-[#edc14d] font-medium pt-1">Support available 24/7</p>
+              </div>
             </div>
 
             {/* Info rows details */}
@@ -104,7 +106,7 @@ export default function ContactView() {
 
           {/* Right form submission element */}
           <div className="lg:col-span-7 bg-[#1A4233]/15 border border-white/5 rounded-3xl p-8 md:p-12">
-            <h3 className="font-serif text-2xl text-white font-semibold mb-6">Dispatch a Message</h3>
+            <h3 className="font-serif text-2xl text-white font-semibold mb-6">Send a Message</h3>
             
             <AnimatePresence mode="wait">
               {submitStatus === 'success' ? (
@@ -195,9 +197,9 @@ export default function ContactView() {
                       disabled={submitStatus === 'submitting'}
                       className="w-full bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] py-3.5 rounded-full font-sans text-xs font-bold tracking-widest uppercase hover:scale-[1.01] active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                     >
-                      {submitStatus === 'submitting' ? 'Transmitting Inquiries...' : (
+                      {submitStatus === 'submitting' ? 'Submitting Inquiry...' : (
                         <>
-                          TRANSMIT INQUIRY <Send size={13} />
+                          SUBMIT INQUIRY <Send size={13} />
                         </>
                       )}
                     </button>

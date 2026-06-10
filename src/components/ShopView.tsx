@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ShoppingBasket, Eye, X, Star, Sparkles, Filter, CheckCircle2 } from 'lucide-react';
 import { Product } from '../types';
 import { PRODUCTS } from '../data';
@@ -8,13 +8,23 @@ interface ShopViewProps {
   categoryFilter: 'all' | 'produce' | 'pantry' | 'meals';
   setCategoryFilter: (cat: 'all' | 'produce' | 'pantry' | 'meals') => void;
   onAddToCart: (product: Product, quantity: number) => void;
+  selectedProductId?: string | null;
+  onClearSelectedProductId?: () => void;
 }
 
-export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCart }: ShopViewProps) {
+export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCart, selectedProductId, onClearSelectedProductId }: ShopViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'popular' | 'priceAsc' | 'priceDesc'>('popular');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedProductId) {
+      const product = PRODUCTS.find(p => p.id === selectedProductId) ?? null;
+      setSelectedProduct(product);
+      onClearSelectedProductId?.();
+    }
+  }, [selectedProductId]);
 
   const handleAddToCartClick = (prod: Product, e: React.MouseEvent) => {
     e.stopPropagation();

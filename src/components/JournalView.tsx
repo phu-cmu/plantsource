@@ -208,10 +208,10 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
         {/* Banner Headers (Image 2) */}
         <div className="text-center space-y-4 mb-16">
           <p className="text-[#edc14d] font-sans text-xs font-bold tracking-widest uppercase">
-            THE PLANTSOURCE WHOLESALE JOURNAL
+            THE PLANTSOURCE WHOLESALE
           </p>
           <h1 className="font-serif text-4xl md:text-6xl text-white font-bold tracking-tight">
-            Nourishing the Mind, Body, and Earth.
+            Share & Connect
           </h1>
           <p className="font-sans text-sm md:text-base text-[#c1c8c2] max-w-2xl mx-auto font-light leading-relaxed">
             Curated insights on high-end organic wellness, seasonal recipes, and the art of sustainable living.

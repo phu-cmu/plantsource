@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { ArrowRight, Leaf, ShieldAlert, Heart, Sprout, ShieldCheck, Sparkles, AlertCircle } from 'lucide-react';
+import { ArrowRight, Leaf, ShieldAlert, Heart, Sprout, ShieldCheck, Sparkles, AlertCircle, Star, Trophy, Truck, Package, Award, Headphones } from 'lucide-react';
 import { ViewType, Product, Article } from '../types';
-import { IMAGES, ARTICLES } from '../data';
+import { IMAGES, ARTICLES, PRODUCTS } from '../data';
 import { motion } from 'motion/react';
 
 interface HomeViewProps {
   setView: (view: ViewType) => void;
   setCategoryFilter: (category: 'all' | 'produce' | 'pantry' | 'meals') => void;
   setSelectedArticleId: (id: string | null) => void;
+  setSelectedProductId: (id: string | null) => void;
 }
 
-export default function HomeView({ setView, setCategoryFilter, setSelectedArticleId }: HomeViewProps) {
+export default function HomeView({ setView, setCategoryFilter, setSelectedArticleId, setSelectedProductId }: HomeViewProps) {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -36,6 +37,14 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
     setNewsletterStatus('success');
     setNewsletterEmail('');
     setTimeout(() => setNewsletterStatus('idle'), 5000);
+  };
+
+  const bestSeller = PRODUCTS.reduce((top, p) => p.rating > top.rating ? p : top, PRODUCTS[0]);
+
+  const handleViewProduct = (productId: string) => {
+    setSelectedProductId(productId);
+    setView('shop');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Get the two specific articles from the screenshot to display:
@@ -95,7 +104,56 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         </div>
       </section>
 
-      {/* 2. Curated Selections Bento Grid Section */}
+      {/* 2. Trust Strip */}
+      <section className="border-y border-white/5 bg-[#0e1010]">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 divide-x divide-white/5">
+          {[
+            {
+              icon: <Truck size={22} className="text-[#edc14d]" />,
+              title: 'Free Delivery',
+              subtitle: 'For local area',
+            },
+            {
+              icon: <Package size={22} className="text-[#edc14d]" />,
+              title: 'Always Fresh',
+              subtitle: 'Product well packaged',
+            },
+            {
+              icon: <Award size={22} className="text-[#edc14d]" />,
+              title: 'Superior Quality',
+              subtitle: 'Quality products',
+            },
+            {
+              icon: <Headphones size={22} className="text-[#edc14d]" />,
+              title: 'Support',
+              subtitle: '24/7 support',
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              className="flex items-center gap-4 py-6 px-6 md:px-10"
+            >
+              <div className="w-10 h-10 rounded-full bg-[#013120] border border-white/5 flex items-center justify-center shrink-0">
+                {item.icon}
+              </div>
+              <div>
+                <p className="font-sans text-sm font-bold text-white tracking-wide">
+                  {item.title}
+                </p>
+                <p className="font-sans text-xs text-white/40 font-light mt-0.5">
+                  {item.subtitle}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. Curated Selections Bento Grid Section */}
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="mb-12 flex flex-col items-start" id="curated-selections-trigger">
           <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
@@ -183,7 +241,189 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         </div>
       </section>
 
-      {/* 3. The Plantsource Wholesale Philosophy Section */}
+      {/* 3. Best Seller of the Month */}
+      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="mb-12 flex flex-col items-start">
+          <div className="flex items-center gap-3 mb-4">
+            <Trophy size={18} className="text-[#edc14d]" />
+            <span className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
+              Best Seller of the Month
+            </span>
+          </div>
+          <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
+            This Month's Crown Reserve
+          </h2>
+          <div className="w-20 h-1 bg-[#edc14d] mt-4 rounded-full" />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="relative grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden border border-white/10 bg-[#1A4233]/30"
+        >
+          {/* Accent top line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#edc14d]/60 to-transparent" />
+
+          {/* Left — Product Image */}
+          <div className="relative min-h-[320px] md:min-h-[480px] overflow-hidden">
+            <img
+              src={bestSeller.image}
+              alt={bestSeller.name}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#1A4233]/60 hidden md:block" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden" />
+
+            {/* Rating badge */}
+            <span className="absolute top-5 left-5 bg-black/70 backdrop-blur-md border border-white/10 text-[#edc14d] text-xs font-sans font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+              <Star size={11} className="fill-current" /> {bestSeller.rating} / 5.0
+            </span>
+
+            {/* Best Seller badge */}
+            <span className="absolute top-5 right-5 bg-[#edc14d] text-[#362800] text-[10px] font-sans font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
+              #1 This Month
+            </span>
+          </div>
+
+          {/* Right — Product Info */}
+          <div className="flex flex-col justify-center p-10 md:p-14 space-y-6">
+            <div className="space-y-1">
+              <span className="font-sans text-[10px] tracking-widest text-[#edc14d] uppercase font-bold">
+                {bestSeller.categoryLabel}
+              </span>
+              <p className="font-sans text-xs text-white/40 uppercase tracking-wider">
+                {bestSeller.unit}
+              </p>
+            </div>
+
+            <h3 className="font-serif text-3xl md:text-4xl font-bold text-white leading-tight">
+              {bestSeller.name}
+            </h3>
+
+            <p className="font-sans text-sm text-[#c1c8c2] leading-relaxed font-light max-w-sm">
+              {bestSeller.description}
+            </p>
+
+            <ul className="space-y-2">
+              {bestSeller.benefits.map((b, i) => (
+                <li key={i} className="font-sans text-xs text-white/60 flex items-center gap-2">
+                  <Sparkles size={11} className="text-[#edc14d] shrink-0" /> {b}
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex items-center justify-between pt-4 border-t border-white/10">
+              <span className="font-serif text-3xl font-bold text-white">
+                ${bestSeller.price.toFixed(2)}
+              </span>
+
+              <button
+                onClick={() => handleViewProduct(bestSeller.id)}
+                className="flex items-center gap-2 bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-7 py-3.5 rounded-full font-sans text-xs font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#FDD05A]/10 cursor-pointer group"
+              >
+                VIEW PRODUCT
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* 4. Top 10 Most Favorite */}
+      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Star size={16} className="text-[#edc14d] fill-current" />
+              <span className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
+                Community Favorites
+              </span>
+            </div>
+            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
+              Top 10 Most Favorite
+            </h2>
+            <div className="w-20 h-1 bg-[#edc14d] mt-4 rounded-full" />
+          </div>
+          <button
+            onClick={() => { setCategoryFilter('all'); setView('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="text-[#edc14d] font-sans text-xs font-bold tracking-widest flex items-center gap-2 group hover:gap-3 transition-all cursor-pointer uppercase pb-1 border-b border-[#edc14d]/10 hover:border-[#edc14d]/60 w-fit"
+          >
+            VIEW ALL PRODUCTS
+            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+
+        {(() => {
+          const top10 = [...PRODUCTS].sort((a, b) => b.rating - a.rating).slice(0, 10);
+          return (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+              {top10.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="group bg-[#1A4233]/20 border border-white/5 rounded-2xl overflow-hidden flex flex-col hover:border-white/15 hover:scale-[1.02] transition-all duration-300"
+                >
+                  {/* Image */}
+                  <div className="relative aspect-square overflow-hidden bg-black/30">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+
+                    {/* Rank badge */}
+                    <span className={`absolute top-2.5 left-2.5 w-7 h-7 rounded-full flex items-center justify-center font-sans text-[11px] font-black border ${
+                      index === 0
+                        ? 'bg-[#edc14d] text-[#362800] border-[#edc14d]'
+                        : index === 1
+                        ? 'bg-white/20 text-white border-white/30 backdrop-blur-sm'
+                        : index === 2
+                        ? 'bg-[#a3732a]/70 text-[#fde4a0] border-[#a3732a] backdrop-blur-sm'
+                        : 'bg-black/60 text-white/70 border-white/10 backdrop-blur-sm'
+                    }`}>
+                      {index + 1}
+                    </span>
+
+                    {/* Rating */}
+                    <span className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[#edc14d] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border border-white/10">
+                      <Star size={9} className="fill-current" /> {product.rating}
+                    </span>
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-4 flex flex-col gap-2 flex-1">
+                    <span className="font-sans text-[9px] tracking-widest text-[#edc14d] uppercase font-bold">
+                      {product.categoryLabel}
+                    </span>
+                    <h3 className="font-serif text-sm font-medium text-white leading-snug line-clamp-2 group-hover:text-[#edc14d] transition-colors flex-1">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="font-serif text-base font-bold text-white">
+                        ${product.price.toFixed(2)}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleViewProduct(product.id)}
+                      className="w-full mt-1 py-2 rounded-full border border-[#edc14d]/40 hover:border-[#edc14d] hover:bg-[#edc14d]/10 text-[#edc14d] font-sans text-[10px] font-bold tracking-widest uppercase transition-all cursor-pointer"
+                    >
+                      View Product
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          );
+        })()}
+      </section>
+
+      {/* 5. The Plantsource Wholesale Philosophy Section */}
       <section className="bg-[#1a1c1c] py-24 border-y border-white/5">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
@@ -232,7 +472,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         </div>
       </section>
 
-      {/* 4. Latest Blog Preview (Plantsource Wholesale Living) */}
+      {/* 6. Latest Blog Preview (Plantsource Wholesale Living) */}
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
           <div>
@@ -298,29 +538,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         </div>
       </section>
 
-      {/* 5. Founders Quote (Image 3 section) */}
-      <section className="bg-gradient-to-b from-[#121414] to-[#0c0f0f] py-24 border-t border-white/5 px-6">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="text-[#edc14d] opacity-20 flex justify-center">
-            <span className="font-serif text-[120px] leading-[0] select-none h-10 block pt-10">“</span>
-          </div>
-          
-          <blockquote className="font-serif text-2xl md:text-4xl italic text-[#e2e2e2] leading-relaxed font-light">
-            "We founded Plantsource Wholesale because we couldn't find a place that honored the purity of plants with the same rigor as high-end cuisine. We wanted to create a sanctuary where health and hedonism meet."
-          </blockquote>
-          
-          <div className="space-y-1">
-            <p className="font-sans text-xs tracking-widest uppercase font-bold text-[#edc14d]">
-              ELARA & JULIAN VANE
-            </p>
-            <p className="font-sans text-xs text-white/40 uppercase">
-              Founders of Plantsource Wholesale
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Join the Movement / Call-To-Action (Image 3) */}
+      {/* 8. Join the Movement / Call-To-Action (Image 3) */}
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="relative bg-[#1A4233]/40 border border-white/5 rounded-3xl p-10 md:p-20 text-center overflow-hidden">
           {/* Accent light source */}
@@ -352,87 +570,128 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         </div>
       </section>
 
-      {/* 7. Footer details and Newsletter - Premium Black Block */}
-      <footer className="bg-[#0c0f0f] border-t border-white/5 py-20 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-          
-          {/* Col 1: Bio */}
-          <div className="space-y-6">
-            <h3 className="font-serif text-xl tracking-wider text-white uppercase font-bold">
-              Plantsource Wholesale
-            </h3>
-            <p className="font-sans text-sm text-white/50 leading-relaxed font-light">
-              Cultivating a world where culinary luxury, organic biology, and ethical purity coexist elegantly in every harvest.
-            </p>
-          </div>
+      {/* 9. Footer */}
+      <footer className="bg-[#0c0f0f] border-t border-white/5 py-16 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
 
-          {/* Col 2: Explore */}
-          <div className="space-y-4">
-            <h4 className="font-sans text-xs font-bold tracking-wider text-[#edc14d] uppercase">
-              EXPLORE
-            </h4>
-            <ul className="space-y-3 font-sans text-sm text-white/40 font-light">
-              <li><button onClick={() => handleCategoryNav('produce')} className="hover:text-white transition-colors cursor-pointer text-left">Harvest Sourcing</button></li>
-              <li><button onClick={() => setView('story')} className="hover:text-white transition-colors cursor-pointer text-left">The Philosophy</button></li>
-              <li><button onClick={() => handleViewAllRecipes()} className="hover:text-white transition-colors cursor-pointer text-left">Curated Recipes</button></li>
-              <li><button onClick={() => setView('contact')} className="hover:text-white transition-colors cursor-pointer text-left">Contact & Care</button></li>
-            </ul>
-          </div>
-
-          {/* Col 3: Support */}
-          <div className="space-y-4">
-            <h4 className="font-sans text-xs font-bold tracking-wider text-[#edc14d] uppercase">
-              SUPPORT
-            </h4>
-            <ul className="space-y-3 font-sans text-sm text-white/40 font-light">
-              <li><a href="#" className="hover:text-white transition-colors">Wholesale Operations</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Shipping & Bio-Fresh Cold Chains</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy Charter</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Soil & Botanical Sourcing Reports</a></li>
-            </ul>
-          </div>
-
-          {/* Col 4: Newsletter Input matching Image 1 */}
-          <div className="space-y-4">
-            <h4 className="font-sans text-xs font-bold tracking-wider text-[#edc14d] uppercase">
-              NEWSLETTER
-            </h4>
-            <p className="font-sans text-sm text-white/50 font-light">
-              Join our inner harvest circle for seasonal botanical updates.
-            </p>
-            
-            <form onSubmit={handleNewsletterSubmit} className="space-y-2">
-              <div className="flex border-b border-white/20 pb-2 items-center group focus-within:border-[#edc14d] transition-colors">
-                <input 
-                  type="email" 
-                  value={newsletterEmail}
-                  onChange={(e) => setNewsletterEmail(e.target.value)}
-                  placeholder="email@example.com" 
-                  className="bg-transparent border-none text-sm w-full focus:outline-none p-0 focus:ring-0 text-white placeholder-white/30"
-                />
-                <button type="submit" className="text-[#edc14d] hover:scale-110 active:scale-95 transition-transform cursor-pointer p-1">
-                  <ArrowRight size={18} />
-                </button>
+          {/* Brand */}
+          <div className="mb-12 pb-10 border-b border-white/5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#013120] flex items-center justify-center border border-white/10">
+                <Leaf size={15} className="text-[#edc14d]" />
               </div>
-              
-              {newsletterStatus === 'success' && (
-                <p className="text-emerald-400 text-xs flex items-center gap-1.5 pt-1 font-sans">
-                  <ShieldCheck size={12} /> Email registered successfully.
-                </p>
-              )}
-              {newsletterStatus === 'error' && (
-                <p className="text-rose-400 text-xs flex items-center gap-1.5 pt-1 font-sans">
-                  <AlertCircle size={12} /> Please enter a valid email address.
-                </p>
-              )}
-            </form>
+              <span className="font-serif text-lg tracking-wider font-semibold text-white uppercase">
+                Plantsource Wholesale
+              </span>
+            </div>
+            <p className="font-sans text-xs text-white/30 font-light max-w-xs">
+              Purity in every bite — sustainably sourced, ethically harvested.
+            </p>
           </div>
-        </div>
 
-        {/* Global copyright footer */}
-        <div className="mt-16 pt-8 border-t border-white/5 text-center flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] tracking-wider font-sans text-white/30 font-semibold uppercase">
-          <span>© 2024 Plantsource Wholesale CO. ALL RIGHTS RESERVED.</span>
-          <span>PURITY IN EVERY BITE.</span>
+          {/* 3 Columns */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+
+            {/* Col 1: Connect with us */}
+            <div className="space-y-5">
+              <h4 className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
+                Connect With Us
+              </h4>
+              <div className="flex flex-col gap-3">
+                {[
+                  {
+                    label: 'Instagram',
+                    icon: (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'TikTok',
+                    icon: (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.28 6.28 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'YouTube',
+                    icon: (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                        <path d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.6 2.8 12 2.8 12 2.8s-4.6 0-6.8.1C4.6 3 3.3 3 2.2 4.2 1.3 5 1 7 1 7S.7 9.3.7 11.5v2.1c0 2.2.3 4.5.3 4.5s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.6 22.2 12 22.2 12 22.2s4.6 0 6.8-.2c.6-.1 1.9-.1 3-1.2.9-.8 1.2-2.8 1.2-2.8s.3-2.3.3-4.5v-2.1C23.3 9.3 23 7 23 7zM9.7 15.5V8.4l8.1 3.6-8.1 3.5z"/>
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'Pinterest',
+                    icon: (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.44 7.63 11.22-.1-.96-.2-2.43.04-3.47.22-.94 1.47-6.23 1.47-6.23s-.37-.75-.37-1.87c0-1.75 1.02-3.06 2.28-3.06 1.08 0 1.6.81 1.6 1.78 0 1.08-.69 2.7-1.05 4.2-.3 1.26.62 2.28 1.86 2.28 2.23 0 3.73-2.85 3.73-6.22 0-2.57-1.74-4.37-4.22-4.37-2.88 0-4.57 2.16-4.57 4.39 0 .87.33 1.8.75 2.3a.3.3 0 0 1 .07.29c-.08.31-.25 1-.28 1.14-.04.18-.14.22-.32.13-1.25-.58-2.03-2.42-2.03-3.9 0-3.17 2.3-6.08 6.63-6.08 3.48 0 6.19 2.48 6.19 5.8 0 3.46-2.18 6.24-5.2 6.24-1.02 0-1.97-.53-2.3-1.15l-.62 2.33c-.23.87-.84 1.96-1.25 2.62.94.29 1.93.45 2.96.45 6.63 0 12-5.37 12-12S18.63 0 12 0z"/>
+                      </svg>
+                    ),
+                  },
+                ].map((social) => (
+                  <a
+                    key={social.label}
+                    href="#"
+                    className="flex items-center gap-3 text-white/40 hover:text-[#edc14d] transition-colors group"
+                  >
+                    <span className="w-8 h-8 rounded-full border border-white/10 group-hover:border-[#edc14d]/40 flex items-center justify-center transition-colors">
+                      {social.icon}
+                    </span>
+                    <span className="font-sans text-sm font-light">{social.label}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 2: Policies */}
+            <div className="space-y-5">
+              <h4 className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
+                Policies
+              </h4>
+              <ul className="space-y-3 font-sans text-sm text-white/40 font-light">
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">Shipping Policy</a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">Refund Policy</a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 3: Quick Links */}
+            <div className="space-y-5">
+              <h4 className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
+                Quick Links
+              </h4>
+              <ul className="space-y-3 font-sans text-sm text-white/40 font-light">
+                <li>
+                  <button onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-white transition-colors cursor-pointer text-left">
+                    Home
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => { setCategoryFilter('all'); setView('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-white transition-colors cursor-pointer text-left">
+                    Product
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => { setView('contact'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-white transition-colors cursor-pointer text-left">
+                    Contact Us
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+          {/* Copyright */}
+          <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] tracking-wider font-sans text-white/30 font-semibold uppercase">
+            <span>© 2024 Plantsource Wholesale CO. All Rights Reserved.</span>
+            <span>Purity In Every Bite.</span>
+          </div>
         </div>
       </footer>
     </div>

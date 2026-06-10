@@ -79,6 +79,71 @@ export const PRODUCTS: Product[] = [
     unit: "450g Pouch",
     rating: 4.7
   },
+  {
+    id: "prod_6",
+    name: "Wild Fermented Kombucha Superfood Brew",
+    price: 14.0,
+    category: "pantry",
+    categoryLabel: "Pantry Staples",
+    image: IMAGES.earthFirst,
+    description: "Artisanal small-batch kombucha fermented with wild cultures and infused with adaptogenic herbs for gut restoration and cellular vitality.",
+    details: "Each batch fermented over 21 days in ceramic crocks using wild SCOBY cultures. Contains live probiotic strains, organic acids, and polyphenol-rich botanical infusions.",
+    benefits: ["Billions of live probiotics", "Adaptogenic herb blend", "Raw & unpasteurized"],
+    unit: "750ml Bottle",
+    rating: 4.8
+  },
+  {
+    id: "prod_7",
+    name: "Organic Miso & Tahini Buddha Bowl",
+    price: 19.5,
+    category: "meals",
+    categoryLabel: "Ready Meals",
+    image: IMAGES.heroAlt,
+    description: "A nourishing chef-crafted bowl with ancient grain base, roasted seasonal vegetables, creamy tahini drizzle, and umami-rich white miso glaze.",
+    details: "Prepared fresh daily using certified organic grains and vegetables sourced from partner farms. No preservatives, no stabilisers — just pure, whole-food culinary artistry.",
+    benefits: ["High fibre ancient grains", "Live miso cultures", "Chef-prepared daily"],
+    unit: "Single Serving Bowl",
+    rating: 4.9
+  },
+  {
+    id: "prod_8",
+    name: "Heirloom Cherry Tomato Vine Cluster",
+    price: 7.5,
+    category: "produce",
+    categoryLabel: "Fresh Produce",
+    image: IMAGES.sunriseFarm,
+    description: "Sun-ripened heirloom cherry tomatoes picked on the vine at peak sweetness, bursting with lycopene and natural sugars from mineral-rich volcanic soil.",
+    details: "Grown in open polytunnels without artificial heating. Each cluster vine-ripened for maximum brix levels and deep umami complexity. Perfect raw or slow-roasted.",
+    benefits: ["High lycopene content", "Vine-ripened for peak brix", "Zero wax coating"],
+    unit: "400g Vine Cluster",
+    rating: 4.6
+  },
+  {
+    id: "prod_9",
+    name: "Raw Activated Cashew & Herb Blend",
+    price: 16.5,
+    category: "pantry",
+    categoryLabel: "Pantry Staples",
+    image: IMAGES.handsSoil,
+    description: "Whole cashews soaked, dehydrated at low temperature, and tossed in cold-pressed herb oils to activate enzymes while preserving delicate natural fats.",
+    details: "Activation process removes enzyme inhibitors and phytic acid, dramatically improving mineral absorption. Finished with a blend of rosemary, thyme, and Himalayan mineral salt.",
+    benefits: ["Enzyme-activated absorption", "Cold-dehydrated below 42°C", "Rich in healthy fats"],
+    unit: "300g Jar",
+    rating: 4.7
+  },
+  {
+    id: "prod_10",
+    name: "Seasonal Warming Spiced Lentil Potage",
+    price: 21.0,
+    category: "meals",
+    categoryLabel: "Ready Meals",
+    image: IMAGES.seasonalStewing,
+    description: "A deeply aromatic slow-cooked lentil potage made with heritage red lentils, turmeric root, cumin, and winter vegetable stock. Ready in minutes.",
+    details: "Each pot slow-simmered for six hours using traditional French braising methods. Uses only heirloom lentil varieties and whole hand-ground spices from certified organic farms.",
+    benefits: ["Slow-cooked 6 hours", "Heirloom lentil varieties", "High iron & folate"],
+    unit: "2-Serving Pot",
+    rating: 4.8
+  },
 ];
 
 export const ARTICLES: Article[] = [

@@ -99,7 +99,166 @@ export default function AboutView({ setView }: AboutViewProps) {
 
         </section>
 
-        {/* 3. The Root of Responsibility (Sourcing / Parallax Section) */}
+        {/* 3. Premium Quality */}
+        <section className="border-t border-white/5 pt-20 space-y-16">
+          <div className="text-center space-y-4">
+            <span className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
+              What's Inside
+            </span>
+            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white">
+              Premium Quality
+            </h2>
+            <p className="font-sans text-sm text-[#c1c8c2] font-light max-w-xl mx-auto leading-relaxed">
+              Every product is crafted from nature's finest plant-based ingredients, selected for maximum purity and nutritional potency.
+            </p>
+            <div className="w-16 h-1 bg-[#edc14d] rounded-full mx-auto" />
+          </div>
+
+          {/* Ingredient diagram */}
+          <div className="relative max-w-2xl mx-auto" style={{ minHeight: '520px' }}>
+
+            {/* SVG connecting lines */}
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 600 520" fill="none" preserveAspectRatio="xMidYMid meet">
+              <line x1="145" y1="145" x2="265" y2="235" stroke="#edc14d" strokeWidth="1" strokeDasharray="6 4" strokeOpacity="0.35"/>
+              <line x1="455" y1="145" x2="335" y2="235" stroke="#edc14d" strokeWidth="1" strokeDasharray="6 4" strokeOpacity="0.35"/>
+              <line x1="145" y1="375" x2="265" y2="285" stroke="#edc14d" strokeWidth="1" strokeDasharray="6 4" strokeOpacity="0.35"/>
+              <line x1="455" y1="375" x2="335" y2="285" stroke="#edc14d" strokeWidth="1" strokeDasharray="6 4" strokeOpacity="0.35"/>
+            </svg>
+
+            {/* Center — hotdog (original colors) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-52 h-52 rounded-full overflow-hidden border-4 border-[#edc14d]/30 shadow-2xl shadow-[#edc14d]/10"
+            >
+              <img src="/plant/hotdog.webp" alt="Plant-based hotdog" className="w-full h-full object-cover" />
+            </motion.div>
+
+            {/* Top-left — Shiitake Mushroom */}
+            <motion.div
+              initial={{ opacity: 0, x: -20, y: -20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="absolute top-4 left-4 w-40 h-40 bg-[#013120] border border-[#edc14d] rounded-2xl overflow-hidden shadow-lg flex items-center justify-center p-1"
+            >
+              <img
+                src="/plant/shiitake_mushroom.webp"
+                alt="Shiitake Mushroom"
+                className="w-full h-full object-contain"
+                              />
+            </motion.div>
+
+            {/* Top-right — Wheat Protein */}
+            <motion.div
+              initial={{ opacity: 0, x: 20, y: -20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="absolute top-4 right-4 w-40 h-40 bg-[#013120] border border-[#edc14d] rounded-2xl overflow-hidden shadow-lg flex items-center justify-center p-1"
+            >
+              <img
+                src="/plant/wheat_protein.webp"
+                alt="Wheat Protein"
+                className="w-full h-full object-contain"
+                              />
+            </motion.div>
+
+            {/* Bottom-left — High Mesh Konjac */}
+            <motion.div
+              initial={{ opacity: 0, x: -20, y: 20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="absolute bottom-4 left-4 w-40 h-40 bg-[#013120] border border-[#edc14d] rounded-2xl overflow-hidden shadow-lg flex items-center justify-center p-1"
+            >
+              <img
+                src="/plant/high_mesh.webp"
+                alt="High Mesh Konjac"
+                className="w-full h-full object-contain"
+                              />
+            </motion.div>
+
+            {/* Bottom-right — Soy Protein */}
+            <motion.div
+              initial={{ opacity: 0, x: 20, y: 20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.25 }}
+              className="absolute bottom-4 right-4 w-40 h-40 bg-[#013120] border border-[#edc14d] rounded-2xl overflow-hidden shadow-lg flex items-center justify-center p-1"
+            >
+              <img
+                src="/plant/soy_protein.webp"
+                alt="Soy Protein"
+                className="w-full h-full object-contain"
+                              />
+            </motion.div>
+
+          </div>
+        </section>
+
+        {/* 4. Three Pillars Icons */}
+        <section className="border-t border-white/5 pt-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              {
+                src: '/plant/product_item.webp',
+                title: 'Product Items',
+                subtitle: 'As many as hundreds of species',
+              },
+              {
+                src: '/plant/safe_to_eat.webp',
+                title: 'Safe to Eat',
+                subtitle: 'Multiple international certifications',
+              },
+              {
+                src: '/plant/iqf.webp',
+                title: 'Quality Assurance',
+                subtitle: 'IQF rapid freezing',
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="flex flex-col items-center text-center gap-5"
+              >
+                <div className="w-32 h-32 rounded-full bg-[#013120] border border-[#edc14d]/40 flex items-center justify-center overflow-hidden p-3 shadow-lg">
+                  <img src={item.src} alt={item.title} className="w-full h-full object-contain" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-serif text-lg font-semibold text-white">{item.title}</h3>
+                  <p className="font-sans text-sm text-[#c1c8c2] font-light">{item.subtitle}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* 5. Certificates */}
+        <section className="border-t border-white/5 pt-16">
+          <div className="text-center mb-10 space-y-2">
+            <span className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
+              Certifications
+            </span>
+            <h3 className="font-serif text-2xl font-semibold text-white">
+              Internationally Certified
+            </h3>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex items-center justify-center">
+            <img
+              src="/plant/certificate.webp"
+              alt="International certifications"
+              className="w-full max-w-2xl object-contain"
+            />
+          </div>
+        </section>
+
+        {/* 6. The Root of Responsibility (Sourcing / Parallax Section) */}
         <section className="border-t border-white/5 pt-20 space-y-12">
           <div className="text-center space-y-4">
             <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white">

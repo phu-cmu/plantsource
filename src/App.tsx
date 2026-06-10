@@ -37,6 +37,7 @@ export default function App() {
   }, [router]);
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'produce' | 'pantry' | 'meals'>('all');
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -104,11 +105,11 @@ export default function App() {
     <div className="min-h-screen bg-[#121414] text-[#e2e2e2] font-sans selection:bg-[#FDD05A] selection:text-[#362800] antialiased">
       
       {/* Floating Navbar */}
-      <Header 
-        currentView={view} 
-        setView={setView} 
-        cartCount={totalCartCount} 
-        onCartClick={() => setIsCartOpen(true)} 
+      <Header
+        currentView={view}
+        setView={setView}
+        cartCount={totalCartCount}
+        onCartClick={() => setIsCartOpen(true)}
       />
 
       {/* Screen view content area wrapped in AnimatePresence with custom animations */}
@@ -122,18 +123,21 @@ export default function App() {
             transition={{ duration: 0.4, ease: 'easeOut' }}
           >
             {view === 'home' && (
-              <HomeView 
-                setView={setView} 
-                setCategoryFilter={setCategoryFilter} 
-                setSelectedArticleId={setSelectedArticleId} 
+              <HomeView
+                setView={setView}
+                setCategoryFilter={setCategoryFilter}
+                setSelectedArticleId={setSelectedArticleId}
+                setSelectedProductId={setSelectedProductId}
               />
             )}
-            
+
             {view === 'shop' && (
-              <ShopView 
-                categoryFilter={categoryFilter} 
-                setCategoryFilter={setCategoryFilter} 
-                onAddToCart={handleAddToCart} 
+              <ShopView
+                categoryFilter={categoryFilter}
+                setCategoryFilter={setCategoryFilter}
+                onAddToCart={handleAddToCart}
+                selectedProductId={selectedProductId}
+                onClearSelectedProductId={() => setSelectedProductId(null)}
               />
             )}
             
