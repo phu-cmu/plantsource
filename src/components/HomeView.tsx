@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowRight, Leaf, ShieldAlert, Heart, Sprout, ShieldCheck, Sparkles, AlertCircle, Star, Trophy, Truck, Package, Award, Headphones } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowRight, Leaf, ShieldAlert, Heart, Sprout, ShieldCheck, Sparkles, AlertCircle, Star, Trophy, Truck, Package, Award, Headphones, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ViewType, Product, Article } from '../types';
 import { IMAGES, ARTICLES, PRODUCTS } from '../data';
 import { motion } from 'motion/react';
@@ -14,6 +14,7 @@ interface HomeViewProps {
 export default function HomeView({ setView, setCategoryFilter, setSelectedArticleId, setSelectedProductId }: HomeViewProps) {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   const handleCategoryNav = (cat: 'produce' | 'pantry' | 'meals') => {
     setCategoryFilter(cat);
@@ -39,8 +40,6 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
     setTimeout(() => setNewsletterStatus('idle'), 5000);
   };
 
-  const bestSeller = PRODUCTS.reduce((top, p) => p.rating > top.rating ? p : top, PRODUCTS[0]);
-
   const handleViewProduct = (productId: string) => {
     setSelectedProductId(productId);
     setView('shop');
@@ -52,20 +51,20 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
   const homeArticles = ARTICLES.filter(art => art.id === 'art_2' || art.id === 'art_3');
 
   return (
-    <div id="home-view" className="bg-[#121414] text-[#e2e2e2] scroll-smooth">
-      
+    <div id="home-view" className="bg-[#F7F4EF] text-[#1C1C1C] scroll-smooth">
+
       {/* 1. Hero Section - Extreme high-end overhead view */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
-          <img 
-            className="w-full h-full object-cover brightness-[0.35]" 
-            src={IMAGES.heroMain} 
+          <img
+            className="w-full h-full object-cover brightness-[0.35]"
+            src={IMAGES.heroMain}
             alt="Vibrant fresh vegan buddha bowl premium backgrounds"
           />
           {/* Elegant soft gradient overlay transitioning to primary green */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#013120] via-black/30 to-[#121414]/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#013120] via-black/30 to-[#F7F4EF]/40" />
         </div>
-        
+
         <div className="relative z-10 text-center px-6 md:px-12 max-w-4xl max-w-7xl mx-auto flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -80,7 +79,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               Experience the pinnacle of plant-based culinary art. Sustainably sourced, ethically harvested, and prepared for the discerning palate.
             </p>
             <div className="pt-6">
-              <button 
+              <button
                 onClick={() => handleNavCategoryAll()}
                 className="bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-10 py-5 rounded-full font-sans text-sm font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#FDD05A]/10 cursor-pointer"
                 id="hero-shop-button"
@@ -92,12 +91,12 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         </div>
 
         {/* Scroll helper mouse animation or accent badge */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 text-[10px] tracking-widest font-semibold uppercase">
-          <span className="w-1.5 h-6 bg-white/20 rounded-full flex justify-center py-1">
-            <motion.span 
-              animate={{ y: [0, 8, 0] }} 
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#8A9490] text-[10px] tracking-widest font-semibold uppercase">
+          <span className="w-1.5 h-6 bg-[#AAB0AE] rounded-full flex justify-center py-1">
+            <motion.span
+              animate={{ y: [0, 8, 0] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
-              className="w-1 h-1 bg-[#edc14d] rounded-full" 
+              className="w-1 h-1 bg-[#edc14d] rounded-full"
             />
           </span>
           <span>SCROLL</span>
@@ -105,8 +104,8 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
       </section>
 
       {/* 2. Trust Strip */}
-      <section className="border-y border-white/5 bg-[#0e1010]">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 divide-x divide-white/5">
+      <section className="border-y border-black/8 bg-[#EDEAE4]">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 divide-x divide-black/8">
           {[
             {
               icon: <Truck size={22} className="text-[#edc14d]" />,
@@ -137,14 +136,14 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               transition={{ duration: 0.4, delay: i * 0.08 }}
               className="flex items-center gap-4 py-6 px-6 md:px-10"
             >
-              <div className="w-10 h-10 rounded-full bg-[#013120] border border-white/5 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-full bg-[#013120] border border-black/8 flex items-center justify-center shrink-0">
                 {item.icon}
               </div>
               <div>
-                <p className="font-sans text-sm font-bold text-white tracking-wide">
+                <p className="font-sans text-sm font-bold text-[#1C1C1C] tracking-wide">
                   {item.title}
                 </p>
-                <p className="font-sans text-xs text-white/40 font-light mt-0.5">
+                <p className="font-sans text-xs text-[#8A9490] font-light mt-0.5">
                   {item.subtitle}
                 </p>
               </div>
@@ -156,7 +155,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
       {/* 3. Curated Selections Bento Grid Section */}
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="mb-12 flex flex-col items-start" id="curated-selections-trigger">
-          <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
+          <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] tracking-wide">
             Curated Selections
           </h2>
           <div className="w-20 h-1 bg-[#edc14d] mt-4 rounded-full" />
@@ -164,19 +163,19 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-auto md:h-[550px]">
           {/* Main big category: Fresh Produce */}
-          <div 
+          <div
             onClick={() => handleCategoryNav('produce')}
-            className="md:col-span-8 group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-white/5 cursor-pointer flex flex-col justify-end"
+            className="md:col-span-8 group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-black/8 cursor-pointer flex flex-col justify-end"
           >
             <div className="absolute inset-0 z-0">
-              <img 
+              <img
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-65"
-                src={IMAGES.freshProduce} 
+                src={IMAGES.freshProduce}
                 alt="Direct organic farm fresh greens"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             </div>
-            
+
             <div className="relative z-10 p-8 md:p-12">
               <span className="text-[#edc14d] font-sans text-xs tracking-widest uppercase mb-2 block font-bold">
                 Direct from Farms
@@ -184,7 +183,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               <h3 className="font-serif text-3xl md:text-4xl font-semibold text-white">
                 Fresh Produce
               </h3>
-              <p className="text-[#c1c8c2] font-sans text-base max-w-sm mt-3 font-light leading-relaxed">
+              <p className="text-[#556260] font-sans text-base max-w-sm mt-3 font-light leading-relaxed">
                 Organic heirloom greens harvested at dawn for mineral density.
               </p>
             </div>
@@ -193,14 +192,14 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
           {/* Secondary Categories column */}
           <div className="md:col-span-4 grid grid-rows-2 gap-8">
             {/* Category: Pantry */}
-            <div 
+            <div
               onClick={() => handleCategoryNav('pantry')}
-              className="group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-white/5 cursor-pointer flex flex-col justify-end p-8"
+              className="group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-black/8 cursor-pointer flex flex-col justify-end p-8"
             >
               <div className="absolute inset-0 z-0">
-                <img 
+                <img
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-50"
-                  src={IMAGES.pantryJars} 
+                  src={IMAGES.pantryJars}
                   alt="Organic artisan staples and ancient grains"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
@@ -216,14 +215,14 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             </div>
 
             {/* Category: Ready Meals */}
-            <div 
+            <div
               onClick={() => handleCategoryNav('meals')}
-              className="group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-white/5 cursor-pointer flex flex-col justify-end p-8"
+              className="group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-black/8 cursor-pointer flex flex-col justify-end p-8"
             >
               <div className="absolute inset-0 z-0">
-                <img 
+                <img
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-50"
-                  src={IMAGES.readyMeals} 
+                  src={IMAGES.readyMeals}
                   alt="Gourmet ready to heat vegan meals"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
@@ -241,98 +240,9 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         </div>
       </section>
 
-      {/* 3. Best Seller of the Month */}
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="mb-12 flex flex-col items-start">
-          <div className="flex items-center gap-3 mb-4">
-            <Trophy size={18} className="text-[#edc14d]" />
-            <span className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
-              Best Seller of the Month
-            </span>
-          </div>
-          <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
-            This Month's Crown Reserve
-          </h2>
-          <div className="w-20 h-1 bg-[#edc14d] mt-4 rounded-full" />
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="relative grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden border border-white/10 bg-[#1A4233]/30"
-        >
-          {/* Accent top line */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#edc14d]/60 to-transparent" />
-
-          {/* Left — Product Image */}
-          <div className="relative min-h-[320px] md:min-h-[480px] overflow-hidden">
-            <img
-              src={bestSeller.image}
-              alt={bestSeller.name}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#1A4233]/60 hidden md:block" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden" />
-
-            {/* Rating badge */}
-            <span className="absolute top-5 left-5 bg-black/70 backdrop-blur-md border border-white/10 text-[#edc14d] text-xs font-sans font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              <Star size={11} className="fill-current" /> {bestSeller.rating} / 5.0
-            </span>
-
-            {/* Best Seller badge */}
-            <span className="absolute top-5 right-5 bg-[#edc14d] text-[#362800] text-[10px] font-sans font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
-              #1 This Month
-            </span>
-          </div>
-
-          {/* Right — Product Info */}
-          <div className="flex flex-col justify-center p-10 md:p-14 space-y-6">
-            <div className="space-y-1">
-              <span className="font-sans text-[10px] tracking-widest text-[#edc14d] uppercase font-bold">
-                {bestSeller.categoryLabel}
-              </span>
-              <p className="font-sans text-xs text-white/40 uppercase tracking-wider">
-                {bestSeller.unit}
-              </p>
-            </div>
-
-            <h3 className="font-serif text-3xl md:text-4xl font-bold text-white leading-tight">
-              {bestSeller.name}
-            </h3>
-
-            <p className="font-sans text-sm text-[#c1c8c2] leading-relaxed font-light max-w-sm">
-              {bestSeller.description}
-            </p>
-
-            <ul className="space-y-2">
-              {bestSeller.benefits.map((b, i) => (
-                <li key={i} className="font-sans text-xs text-white/60 flex items-center gap-2">
-                  <Sparkles size={11} className="text-[#edc14d] shrink-0" /> {b}
-                </li>
-              ))}
-            </ul>
-
-            <div className="flex items-center justify-between pt-4 border-t border-white/10">
-              <span className="font-serif text-3xl font-bold text-white">
-                ${bestSeller.price.toFixed(2)}
-              </span>
-
-              <button
-                onClick={() => handleViewProduct(bestSeller.id)}
-                className="flex items-center gap-2 bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-7 py-3.5 rounded-full font-sans text-xs font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#FDD05A]/10 cursor-pointer group"
-              >
-                VIEW PRODUCT
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* 4. Top 10 Most Favorite */}
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      {/* 3. Top 10 Most Favorite — Carousel */}
+      <section className="py-24 max-w-7xl mx-auto px-6 md:px-12">
+        {/* Header */}
         <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -341,130 +251,139 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                 Community Favorites
               </span>
             </div>
-            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
+            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] tracking-wide">
               Top 10 Most Favorite
             </h2>
             <div className="w-20 h-1 bg-[#edc14d] mt-4 rounded-full" />
           </div>
-          <button
-            onClick={() => { setCategoryFilter('all'); setView('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="text-[#edc14d] font-sans text-xs font-bold tracking-widest flex items-center gap-2 group hover:gap-3 transition-all cursor-pointer uppercase pb-1 border-b border-[#edc14d]/10 hover:border-[#edc14d]/60 w-fit"
-          >
-            VIEW ALL PRODUCTS
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Prev / Next buttons */}
+            <button
+              onClick={() => carouselRef.current?.scrollBy({ left: -280, behavior: 'smooth' })}
+              className="w-10 h-10 rounded-full border border-black/12 hover:border-[#edc14d] flex items-center justify-center text-[#556260] hover:text-[#edc14d] transition-all cursor-pointer"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={() => carouselRef.current?.scrollBy({ left: 280, behavior: 'smooth' })}
+              className="w-10 h-10 rounded-full border border-black/12 hover:border-[#edc14d] flex items-center justify-center text-[#556260] hover:text-[#edc14d] transition-all cursor-pointer"
+            >
+              <ChevronRight size={18} />
+            </button>
+            <button
+              onClick={() => { setCategoryFilter('all'); setView('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="text-[#edc14d] font-sans text-xs font-bold tracking-widest flex items-center gap-2 group hover:gap-3 transition-all cursor-pointer uppercase pb-1 border-b border-[#edc14d]/10 hover:border-[#edc14d]/60 ml-2"
+            >
+              VIEW ALL
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </div>
 
-        {(() => {
-          const top10 = [...PRODUCTS].sort((a, b) => b.rating - a.rating).slice(0, 10);
-          return (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-              {top10.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="group bg-[#1A4233]/20 border border-white/5 rounded-2xl overflow-hidden flex flex-col hover:border-white/15 hover:scale-[1.02] transition-all duration-300"
+        {/* Carousel track */}
+        <div
+          ref={carouselRef}
+          className="flex gap-5 overflow-x-auto scroll-smooth pb-4"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {[...PRODUCTS].sort((a, b) => b.rating - a.rating).slice(0, 10).map((product, index) => (
+            <div
+              key={product.id}
+              className="group bg-[#013120]/6 border border-black/8 rounded-2xl overflow-hidden flex flex-col hover:border-black/12 hover:scale-[1.02] transition-all duration-300 flex-shrink-0 w-[240px]"
+            >
+              {/* Image */}
+              <div className="relative aspect-square overflow-hidden bg-black/30">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+
+                {/* Rank badge */}
+                <span className={`absolute top-2.5 left-2.5 w-7 h-7 rounded-full flex items-center justify-center font-sans text-[11px] font-black border ${
+                  index === 0
+                    ? 'bg-[#edc14d] text-[#362800] border-[#edc14d]'
+                    : index === 1
+                    ? 'bg-white/20 text-white border-white/30 backdrop-blur-sm'
+                    : index === 2
+                    ? 'bg-[#a3732a]/70 text-[#fde4a0] border-[#a3732a] backdrop-blur-sm'
+                    : 'bg-black/60 text-white/70 border-white/10 backdrop-blur-sm'
+                }`}>
+                  {index + 1}
+                </span>
+
+                {/* Rating */}
+                <span className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[#edc14d] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border border-white/10">
+                  <Star size={9} className="fill-current" /> {product.rating}
+                </span>
+              </div>
+
+              {/* Info */}
+              <div className="p-4 flex flex-col gap-2 flex-1">
+                <span className="font-sans text-[9px] tracking-widest text-[#edc14d] uppercase font-bold">
+                  {product.categoryLabel}
+                </span>
+                <h3 className="font-serif text-sm font-medium text-[#1C1C1C] leading-snug line-clamp-2 group-hover:text-[#edc14d] transition-colors flex-1">
+                  {product.name}
+                </h3>
+                <span className="font-serif text-base font-bold text-[#1C1C1C]">
+                  ${product.price.toFixed(2)}
+                </span>
+                <button
+                  onClick={() => handleViewProduct(product.id)}
+                  className="w-full mt-1 py-2 rounded-full border border-[#edc14d]/40 hover:border-[#edc14d] hover:bg-[#edc14d]/10 text-[#edc14d] font-sans text-[10px] font-bold tracking-widest uppercase transition-all cursor-pointer"
                 >
-                  {/* Image */}
-                  <div className="relative aspect-square overflow-hidden bg-black/30">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-
-                    {/* Rank badge */}
-                    <span className={`absolute top-2.5 left-2.5 w-7 h-7 rounded-full flex items-center justify-center font-sans text-[11px] font-black border ${
-                      index === 0
-                        ? 'bg-[#edc14d] text-[#362800] border-[#edc14d]'
-                        : index === 1
-                        ? 'bg-white/20 text-white border-white/30 backdrop-blur-sm'
-                        : index === 2
-                        ? 'bg-[#a3732a]/70 text-[#fde4a0] border-[#a3732a] backdrop-blur-sm'
-                        : 'bg-black/60 text-white/70 border-white/10 backdrop-blur-sm'
-                    }`}>
-                      {index + 1}
-                    </span>
-
-                    {/* Rating */}
-                    <span className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[#edc14d] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border border-white/10">
-                      <Star size={9} className="fill-current" /> {product.rating}
-                    </span>
-                  </div>
-
-                  {/* Info */}
-                  <div className="p-4 flex flex-col gap-2 flex-1">
-                    <span className="font-sans text-[9px] tracking-widest text-[#edc14d] uppercase font-bold">
-                      {product.categoryLabel}
-                    </span>
-                    <h3 className="font-serif text-sm font-medium text-white leading-snug line-clamp-2 group-hover:text-[#edc14d] transition-colors flex-1">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="font-serif text-base font-bold text-white">
-                        ${product.price.toFixed(2)}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleViewProduct(product.id)}
-                      className="w-full mt-1 py-2 rounded-full border border-[#edc14d]/40 hover:border-[#edc14d] hover:bg-[#edc14d]/10 text-[#edc14d] font-sans text-[10px] font-bold tracking-widest uppercase transition-all cursor-pointer"
-                    >
-                      View Product
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
+                  View Product
+                </button>
+              </div>
             </div>
-          );
-        })()}
+          ))}
+        </div>
       </section>
 
       {/* 5. The Plantsource Wholesale Philosophy Section */}
-      <section className="bg-[#1a1c1c] py-24 border-y border-white/5">
+      <section className="bg-[#EDEAE4] py-24 border-y border-black/8">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
-            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
+            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] tracking-wide">
               The Plantsource Wholesale Philosophy
             </h2>
-            <p className="font-sans text-base md:text-lg text-[#c1c8c2] max-w-2xl mx-auto font-light leading-relaxed">
+            <p className="font-sans text-base md:text-lg text-[#556260] max-w-2xl mx-auto font-light leading-relaxed">
               Commitment to purity isn't just a tagline, it's our core operating principle.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Card 1: 100% Organic */}
-            <div className="flex flex-col items-center text-center p-10 bg-[#121414] border border-white/5 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
-              <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-white/5 group-hover:bg-[#1A4233] transition-colors">
+            <div className="flex flex-col items-center text-center p-10 bg-[#F7F4EF] border border-black/8 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
+              <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-black/8 group-hover:bg-[#1A4233] transition-colors">
                 <Sprout size={28} className="text-[#edc14d]" />
               </div>
-              <h4 className="font-serif text-xl font-semibold text-white mb-3">100% Organic</h4>
-              <p className="font-sans text-sm text-[#c1c8c2] leading-relaxed font-light">
+              <h4 className="font-serif text-xl font-semibold text-[#1C1C1C] mb-3">100% Organic</h4>
+              <p className="font-sans text-sm text-[#556260] leading-relaxed font-light">
                 No synthetic pesticides or fertilizers. Ever. Just nature in its purest, most vitalizing form.
               </p>
             </div>
 
             {/* Card 2: Carbon Neutral */}
-            <div className="flex flex-col items-center text-center p-10 bg-[#121414] border border-white/5 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
-              <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-white/5 group-hover:bg-[#1A4233] transition-colors">
+            <div className="flex flex-col items-center text-center p-10 bg-[#F7F4EF] border border-black/8 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
+              <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-black/8 group-hover:bg-[#1A4233] transition-colors">
                 <Leaf size={28} className="text-[#edc14d]" />
               </div>
-              <h4 className="font-serif text-xl font-semibold text-white mb-3">Carbon Neutral</h4>
-              <p className="font-sans text-sm text-[#c1c8c2] leading-relaxed font-light">
+              <h4 className="font-serif text-xl font-semibold text-[#1C1C1C] mb-3">Carbon Neutral</h4>
+              <p className="font-sans text-sm text-[#556260] leading-relaxed font-light">
                 Our delivery courier grids and fully compostable packaging systems are meticulously designed with local soil health in mind.
               </p>
             </div>
 
             {/* Card 3: Nutrition First */}
-            <div className="flex flex-col items-center text-center p-10 bg-[#121414] border border-white/5 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
-              <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-white/5 group-hover:bg-[#1A4233] transition-colors">
+            <div className="flex flex-col items-center text-center p-10 bg-[#F7F4EF] border border-black/8 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
+              <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-black/8 group-hover:bg-[#1A4233] transition-colors">
                 <Sparkles size={28} className="text-[#edc14d]" />
               </div>
-              <h4 className="font-serif text-xl font-semibold text-white mb-3">Nutrition First</h4>
-              <p className="font-sans text-sm text-[#c1c8c2] leading-relaxed font-light">
+              <h4 className="font-serif text-xl font-semibold text-[#1C1C1C] mb-3">Nutrition First</h4>
+              <p className="font-sans text-sm text-[#556260] leading-relaxed font-light">
                 Formulated by functional nutritional experts to ensure every molecule absorbed boosts cellular vitality.
               </p>
             </div>
@@ -476,19 +395,19 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
           <div>
-            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
+            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] tracking-wide">
               Plantsource Wholesale Living
             </h2>
-            <p className="font-sans text-sm text-[#c1c8c2] font-light mt-2">
+            <p className="font-sans text-sm text-[#556260] font-light mt-2">
               Insights into an elevated plant-powered lifestyle.
             </p>
           </div>
-          
-          <button 
+
+          <button
             onClick={() => handleViewAllArticles()}
             className="text-[#edc14d] font-sans text-xs font-bold tracking-widest flex items-center gap-2 group hover:gap-3 transition-all cursor-pointer uppercase pb-1 border-b border-[#edc14d]/10 hover:border-[#edc14d]/60"
           >
-            VIEW ALL ARTICLES 
+            EXPLORE MORE
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -496,37 +415,37 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         {/* 2-Column Horizontal Cards exactly matching Image 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {homeArticles.map((article) => (
-            <article 
+            <article
               key={article.id}
-              className="group bg-[#1A4233]/40 hover:bg-[#1a4233]/70 border border-white/5 overflow-hidden rounded-3xl flex flex-col md:flex-row transition-all duration-300"
+              className="group bg-[#013120]/6 hover:bg-[#013120]/10 border border-black/8 overflow-hidden rounded-3xl flex flex-col md:flex-row transition-all duration-300"
             >
               <div className="md:w-1/2 overflow-hidden relative min-h-[220px] md:min-h-auto flex items-stretch">
-                <img 
+                <img
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 absolute inset-0"
-                  src={article.image} 
+                  src={article.image}
                   alt={article.title}
                 />
               </div>
-              
+
               <div className="p-8 md:w-1/2 flex flex-col justify-center space-y-4">
                 <div className="flex items-center gap-3">
-                  <span className="border border-white/10 px-3 py-1 rounded-full font-sans text-[10px] tracking-wider uppercase text-white/80">
+                  <span className="border border-black/10 px-3 py-1 rounded-full font-sans text-[10px] tracking-wider uppercase text-[#1C1C1C]/80">
                     {article.categoryLabel}
                   </span>
-                  <span className="text-white/40 font-sans text-[10px] tracking-wider uppercase font-medium">
+                  <span className="text-[#8A9490] font-sans text-[10px] tracking-wider uppercase font-medium">
                     {article.readTime}
                   </span>
                 </div>
-                
-                <h3 className="font-serif text-xl font-medium text-white group-hover:text-[#edc14d] transition-colors leading-snug">
+
+                <h3 className="font-serif text-xl font-medium text-[#1C1C1C] group-hover:text-[#edc14d] transition-colors leading-snug">
                   {article.title}
                 </h3>
-                
-                <p className="font-sans text-xs text-[#c1c8c2] line-clamp-2 leading-relaxed font-light">
+
+                <p className="font-sans text-xs text-[#556260] line-clamp-2 leading-relaxed font-light">
                   {article.excerpt}
                 </p>
-                
-                <button 
+
+                <button
                   onClick={() => handleArticleClick(article.id)}
                   className="w-fit text-[#edc14d] font-sans text-xs tracking-wider uppercase border-b border-transparent hover:border-[#edc14d]/60 pb-0.5 pt-2 transition-all font-semibold cursor-pointer align-left text-left"
                 >
@@ -536,32 +455,50 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             </article>
           ))}
         </div>
+
+        {/* YouTube Videos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+          {[
+            { id: '7hNtuYT4Gaw' },
+            { id: 'nrDlg17dmWw' },
+          ].map((video) => (
+            <div key={video.id} className="rounded-2xl overflow-hidden border border-black/10 aspect-video">
+              <iframe
+                src={`https://www.youtube.com/embed/${video.id}`}
+                title="Plantsource video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* 8. Join the Movement / Call-To-Action (Image 3) */}
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="relative bg-[#1A4233]/40 border border-white/5 rounded-3xl p-10 md:p-20 text-center overflow-hidden">
+        <div className="relative bg-[#013120]/6 border border-black/8 rounded-3xl p-10 md:p-20 text-center overflow-hidden">
           {/* Accent light source */}
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#edc14d]/50 to-transparent opacity-80" />
-          
+
           <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-white tracking-wide">
+            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] tracking-wide">
               Join the Movement.
             </h2>
-            <p className="font-sans text-base md:text-lg text-[#c1c8c2] font-light leading-relaxed">
+            <p className="font-sans text-base md:text-lg text-[#556260] font-light leading-relaxed">
               Experience the Plantsource Wholesale lifestyle through our seasonal farm-fresh harvests, curated recipes, and exquisite botanical wellness workshops.
             </p>
-            
+
             <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <button 
+              <button
                 onClick={() => handleViewAllRecipes()}
                 className="bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-8 py-5 rounded-full font-sans text-xs font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#FDD05A]/10 cursor-pointer"
               >
                 BROWSE OUR RECIPES
               </button>
-              <button 
+              <button
                 onClick={() => handleNavCategoryAll()}
-                className="border border-[#edc14d]/30 hover:border-[#edc14d] text-white hover:bg-white/5 px-8 py-5 rounded-full font-sans text-xs font-bold tracking-widest uppercase transition-all cursor-pointer"
+                className="border border-[#edc14d]/30 hover:border-[#edc14d] text-[#1C1C1C] hover:bg-black/5 px-8 py-5 rounded-full font-sans text-xs font-bold tracking-widest uppercase transition-all cursor-pointer"
               >
                 VISIT THE BOUTIQUE
               </button>
@@ -571,20 +508,20 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
       </section>
 
       {/* 9. Footer */}
-      <footer className="bg-[#0c0f0f] border-t border-white/5 py-16 px-6 md:px-12">
+      <footer className="bg-[#EDEAE4] border-t border-black/8 py-16 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
 
           {/* Brand */}
-          <div className="mb-12 pb-10 border-b border-white/5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="mb-12 pb-10 border-b border-black/8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#013120] flex items-center justify-center border border-white/10">
+              <div className="w-8 h-8 rounded-full bg-[#013120] flex items-center justify-center border border-black/10">
                 <Leaf size={15} className="text-[#edc14d]" />
               </div>
-              <span className="font-serif text-lg tracking-wider font-semibold text-white uppercase">
+              <span className="font-serif text-lg tracking-wider font-semibold text-[#1C1C1C] uppercase">
                 Plantsource Wholesale
               </span>
             </div>
-            <p className="font-sans text-xs text-white/30 font-light max-w-xs">
+            <p className="font-sans text-xs text-[#AAB0AE] font-light max-w-xs">
               Purity in every bite — sustainably sourced, ethically harvested.
             </p>
           </div>
@@ -635,9 +572,9 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                   <a
                     key={social.label}
                     href="#"
-                    className="flex items-center gap-3 text-white/40 hover:text-[#edc14d] transition-colors group"
+                    className="flex items-center gap-3 text-[#8A9490] hover:text-[#edc14d] transition-colors group"
                   >
-                    <span className="w-8 h-8 rounded-full border border-white/10 group-hover:border-[#edc14d]/40 flex items-center justify-center transition-colors">
+                    <span className="w-8 h-8 rounded-full border border-black/10 group-hover:border-[#edc14d]/40 flex items-center justify-center transition-colors">
                       {social.icon}
                     </span>
                     <span className="font-sans text-sm font-light">{social.label}</span>
@@ -651,12 +588,12 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               <h4 className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
                 Policies
               </h4>
-              <ul className="space-y-3 font-sans text-sm text-white/40 font-light">
+              <ul className="space-y-3 font-sans text-sm text-[#8A9490] font-light">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">Shipping Policy</a>
+                  <a href="#" className="hover:text-[#1C1C1C] transition-colors">Shipping Policy</a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">Refund Policy</a>
+                  <a href="#" className="hover:text-[#1C1C1C] transition-colors">Refund Policy</a>
                 </li>
               </ul>
             </div>
@@ -666,19 +603,19 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               <h4 className="font-sans text-xs font-bold tracking-widest text-[#edc14d] uppercase">
                 Quick Links
               </h4>
-              <ul className="space-y-3 font-sans text-sm text-white/40 font-light">
+              <ul className="space-y-3 font-sans text-sm text-[#8A9490] font-light">
                 <li>
-                  <button onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-white transition-colors cursor-pointer text-left">
+                  <button onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
                     Home
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => { setCategoryFilter('all'); setView('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-white transition-colors cursor-pointer text-left">
+                  <button onClick={() => { setCategoryFilter('all'); setView('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
                     Product
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => { setView('contact'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-white transition-colors cursor-pointer text-left">
+                  <button onClick={() => { setView('contact'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
                     Contact Us
                   </button>
                 </li>
@@ -688,7 +625,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
           </div>
 
           {/* Copyright */}
-          <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] tracking-wider font-sans text-white/30 font-semibold uppercase">
+          <div className="mt-12 pt-8 border-t border-black/8 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] tracking-wider font-sans text-[#AAB0AE] font-semibold uppercase">
             <span>© 2024 Plantsource Wholesale CO. All Rights Reserved.</span>
             <span>Purity In Every Bite.</span>
           </div>
