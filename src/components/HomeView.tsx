@@ -75,7 +75,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl tracking-tight text-white leading-tight font-bold">
               Purity In Every Bite
             </h1>
-            <p className="font-sans text-lg md:text-2xl text-on-surface-variant font-light max-w-2xl mx-auto leading-relaxed">
+            <p className="font-sans text-lg md:text-2xl text-white font-light max-w-2xl mx-auto leading-relaxed">
               Experience the pinnacle of plant-based culinary art. Sustainably sourced, ethically harvested, and prepared for the discerning palate.
             </p>
             <div className="pt-6">
@@ -500,7 +500,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                 onClick={() => handleNavCategoryAll()}
                 className="border border-[#edc14d]/30 hover:border-[#edc14d] text-[#1C1C1C] hover:bg-black/5 px-8 py-5 rounded-full font-sans text-xs font-bold tracking-widest uppercase transition-all cursor-pointer"
               >
-                VISIT THE BOUTIQUE
+                VIEW OUR PRODUCT
               </button>
             </div>
           </div>
@@ -561,10 +561,10 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                     ),
                   },
                   {
-                    label: 'Pinterest',
+                    label: 'Facebook',
                     icon: (
                       <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.44 7.63 11.22-.1-.96-.2-2.43.04-3.47.22-.94 1.47-6.23 1.47-6.23s-.37-.75-.37-1.87c0-1.75 1.02-3.06 2.28-3.06 1.08 0 1.6.81 1.6 1.78 0 1.08-.69 2.7-1.05 4.2-.3 1.26.62 2.28 1.86 2.28 2.23 0 3.73-2.85 3.73-6.22 0-2.57-1.74-4.37-4.22-4.37-2.88 0-4.57 2.16-4.57 4.39 0 .87.33 1.8.75 2.3a.3.3 0 0 1 .07.29c-.08.31-.25 1-.28 1.14-.04.18-.14.22-.32.13-1.25-.58-2.03-2.42-2.03-3.9 0-3.17 2.3-6.08 6.63-6.08 3.48 0 6.19 2.48 6.19 5.8 0 3.46-2.18 6.24-5.2 6.24-1.02 0-1.97-.53-2.3-1.15l-.62 2.33c-.23.87-.84 1.96-1.25 2.62.94.29 1.93.45 2.96.45 6.63 0 12-5.37 12-12S18.63 0 12 0z"/>
+                        <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.514c-1.491 0-1.956.93-1.956 1.886v2.266h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
                       </svg>
                     ),
                   },
