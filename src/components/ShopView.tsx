@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingBasket, Eye, X, Star, Sparkles, Filter, CheckCircle2 } from 'lucide-react';
+import { Search, ShoppingBasket, Eye, X, Sparkles } from 'lucide-react';
 import { Product } from '../types';
 import { PRODUCTS } from '../data';
 import { motion, AnimatePresence } from 'motion/react';
@@ -12,19 +12,46 @@ interface ShopViewProps {
   onClearSelectedProductId?: () => void;
 }
 
+const API_BASE = 'http://localhost:8000/api';
+
 export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCart, selectedProductId, onClearSelectedProductId }: ShopViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'popular' | 'priceAsc' | 'priceDesc'>('popular');
+  const [sortBy, setSortBy] = useState<'default' | 'nameAsc' | 'nameDesc'>('default');
+  const [brandFilter, setBrandFilter] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
+  const [apiProducts, setApiProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/products`)
+      .then(res => res.json())
+      .then(json => {
+        if (!Array.isArray(json.data)) return;
+        const normalized: Product[] = json.data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category as Product['category'],
+          categoryLabel: p.category_label,
+          brand: p.brand ?? undefined,
+          image: p.image,
+          description: p.description,
+          details: p.details,
+          benefits: p.benefits ?? [],
+          unit: p.unit,
+        }));
+        setApiProducts(normalized);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (selectedProductId) {
-      const product = PRODUCTS.find(p => p.id === selectedProductId) ?? null;
+      const allProducts = [...PRODUCTS, ...apiProducts];
+      const product = allProducts.find(p => p.id === selectedProductId) ?? null;
       setSelectedProduct(product);
       onClearSelectedProductId?.();
     }
-  }, [selectedProductId]);
+  }, [selectedProductId, apiProducts]);
 
   const handleAddToCartClick = (prod: Product, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -40,19 +67,24 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
     setTimeout(() => setAddedProductId(null), 2000);
   };
 
+  const allProducts: Product[] = [...PRODUCTS, ...apiProducts];
+
+  const brandOptions = Array.from(new Set(allProducts.map(p => p.brand).filter(Boolean))) as string[];
+
   // Filter products
-  const filteredProducts = PRODUCTS.filter(prod => {
+  const filteredProducts = allProducts.filter(prod => {
     const matchesCategory = categoryFilter === 'all' || prod.category === categoryFilter;
+    const matchesBrand = brandFilter === 'all' || prod.brand === brandFilter;
     const matchesSearch = prod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           prod.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesBrand && matchesSearch;
   });
 
   // Sort products
   const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === 'priceAsc') return a.price - b.price;
-    if (sortBy === 'priceDesc') return b.price - a.price;
-    return b.rating - a.rating; // Default popular
+    if (sortBy === 'nameAsc') return a.name.localeCompare(b.name);
+    if (sortBy === 'nameDesc') return b.name.localeCompare(a.name);
+    return 0;
   });
 
   return (
@@ -118,15 +150,27 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
               )}
             </div>
 
+            {/* Brand filter */}
+            <select
+              value={brandFilter}
+              onChange={(e) => setBrandFilter(e.target.value)}
+              className="bg-[#013120]/6 border border-black/10 rounded-full py-2.5 px-4 text-xs focus:outline-none focus:border-[#edc14d] text-[#1C1C1C] cursor-pointer shrink-0"
+            >
+              <option value="all" className="bg-[#F0EDE8] text-[#1C1C1C]">All Brands</option>
+              {brandOptions.map(brand => (
+                <option key={brand} value={brand} className="bg-[#F0EDE8] text-[#1C1C1C]">{brand}</option>
+              ))}
+            </select>
+
             {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
               className="bg-[#013120]/6 border border-black/10 rounded-full py-2.5 px-4 text-xs focus:outline-none focus:border-[#edc14d] text-[#1C1C1C] cursor-pointer shrink-0"
             >
-              <option value="popular" className="bg-[#F0EDE8] text-[#1C1C1C]">Popularity</option>
-              <option value="priceAsc" className="bg-[#F0EDE8] text-[#1C1C1C]">Price: Low to High</option>
-              <option value="priceDesc" className="bg-[#F0EDE8] text-[#1C1C1C]">Price: High to Low</option>
+              <option value="default" className="bg-[#F0EDE8] text-[#1C1C1C]">Default</option>
+              <option value="nameAsc" className="bg-[#F0EDE8] text-[#1C1C1C]">Name: A → Z</option>
+              <option value="nameDesc" className="bg-[#F0EDE8] text-[#1C1C1C]">Name: Z → A</option>
             </select>
           </div>
 
@@ -160,11 +204,6 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
 
-                      {/* Rating float */}
-                      <span className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 text-[#edc14d] text-[10px] font-sans font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <Star size={10} className="fill-current" /> {product.rating}
-                      </span>
-
                       {/* Hover action banner overlay */}
                       <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
                         <span className="bg-black/80 backdrop-blur-md border border-white/15 p-3 rounded-full text-[#edc14d] hover:text-[#1C1C1C] hover:scale-110 active:scale-95 transition-all">
@@ -179,6 +218,12 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
                         <span>{product.categoryLabel}</span>
                         <span className="text-[#8A9490]">{product.unit}</span>
                       </div>
+
+                      {product.brand && (
+                        <span className="inline-block text-[9px] font-sans tracking-wider text-[#556260] uppercase font-semibold bg-black/5 border border-black/10 rounded-full px-2 py-0.5">
+                          {product.brand}
+                        </span>
+                      )}
 
                       <h3 className="font-serif text-lg font-medium text-[#1C1C1C] group-hover:text-[#edc14d] transition-colors leading-tight">
                         {product.name}
@@ -236,14 +281,15 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
                       </span>
                     </div>
 
+                    {selectedProduct.brand && (
+                      <span className="inline-block text-[10px] font-sans tracking-wider text-[#556260] uppercase font-semibold bg-black/5 border border-black/10 rounded-full px-2.5 py-1">
+                        {selectedProduct.brand}
+                      </span>
+                    )}
+
                     <h2 className="font-serif text-2xl md:text-3xl font-bold text-[#1C1C1C] leading-tight">
                       {selectedProduct.name}
                     </h2>
-
-                    <div className="flex items-center gap-1.5 text-[#edc14d]">
-                      <Star size={14} className="fill-current" />
-                      <span className="text-xs font-sans font-bold">{selectedProduct.rating} / 5.0 Rating</span>
-                    </div>
 
                     <p className="font-sans text-xs md:text-sm text-[#556260] leading-relaxed font-light">
                       {selectedProduct.details}

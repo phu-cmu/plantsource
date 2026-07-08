@@ -9,3 +9,8 @@ coverage/
 .claude
 CLAUDE.md
 .next/
+.docker
+docker-compose.yml
+Dockerfile
+docker-compose.prod.yml
+.dockerignore

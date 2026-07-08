@@ -4,17 +4,30 @@ import { Article } from '../types';
 import { ARTICLES, IMAGES } from '../data';
 import { motion, AnimatePresence } from 'motion/react';
 
+const API_BASE = 'http://localhost:8000/api';
+
+function extractYoutubeId(url?: string): string | null {
+  if (!url) return null;
+  const m = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 interface JournalViewProps {
   selectedArticleId: string | null;
   setSelectedArticleId: (id: string | null) => void;
 }
 
 export default function JournalView({ selectedArticleId, setSelectedArticleId }: JournalViewProps) {
-  const [activeTag, setActiveTag] = useState<'all' | 'recipes' | 'nutrition' | 'mindfulness' | 'sustainability'>('all');
+  const [activeTag, setActiveTag] = useState<'all' | 'recipes' | 'nutrition' | 'mindfulness' | 'sustainability' | 'media'>('all');
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
   const [shareFeedbackId, setShareFeedbackId] = useState<string | null>(null);
+  const [apiStories, setApiStories] = useState<Article[]>([]);
 
   // Auto-scroll to top when reading an article
   useEffect(() => {
@@ -22,6 +35,34 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [selectedArticleId]);
+
+  // Fetch stories from API (non-blocking — mock data stays visible on failure)
+  useEffect(() => {
+    fetch(`${API_BASE}/explore/stories`)
+      .then(res => res.json())
+      .then(json => {
+        if (!Array.isArray(json.data)) return;
+        const normalized: Article[] = json.data.map((s: any) => ({
+          id: `api_${s.slug}`,
+          slug: s.slug,
+          title: s.title,
+          excerpt: s.excerpt ?? '',
+          content: s.content ?? '',
+          category: s.type as Article['category'],
+          categoryLabel: s.category_label ?? s.type,
+          readTime: '',
+          date: s.date ?? '',
+          author: '',
+          image: s.image ?? s.youtube_thumbnail ?? '',
+          featured: !!s.featured,
+          youtube_url: s.youtube_url ?? undefined,
+          youtube_thumbnail: s.youtube_thumbnail ?? undefined,
+          isHtmlContent: true,
+        }));
+        setApiStories(normalized);
+      })
+      .catch(() => {}); // silently ignore — mock data is the fallback
+  }, []);
 
   const toggleBookmark = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,15 +90,17 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
     }
   };
 
+  const allArticles: Article[] = [...ARTICLES, ...apiStories];
+
   // Filter articles based on active tag
-  const filteredArticles = ARTICLES.filter(article => {
+  const filteredArticles = allArticles.filter(article => {
     if (activeTag === 'all') return true;
     return article.category === activeTag;
   });
 
   // Specific article expansion view
   if (selectedArticleId) {
-    const article = ARTICLES.find(art => art.id === selectedArticleId);
+    const article = allArticles.find(art => art.id === selectedArticleId);
     if (article) {
       return (
         <article className="min-h-screen bg-[#F7F4EF] text-[#1C1C1C] pt-28 pb-24 px-6">
@@ -95,10 +138,10 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
               <div className="flex items-center justify-between border-y border-black/8 py-4 mt-6">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#013120]/6 border border-black/10 flex items-center justify-center text-[#edc14d] font-bold font-serif text-sm">
-                    {article.author.charAt(0)}
+                    {(article.author || 'P').charAt(0)}
                   </div>
                   <div>
-                    <p className="text-xs font-sans tracking-wider text-[#1C1C1C] font-semibold uppercase">{article.author}</p>
+                    <p className="text-xs font-sans tracking-wider text-[#1C1C1C] font-semibold uppercase">{article.author || 'Plantsource Wholesale'}</p>
                     <p className="text-[10px] text-[#8A9490] font-sans uppercase">Plantsource Wholesale Editorial Board</p>
                   </div>
                 </div>
@@ -132,44 +175,65 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
               </div>
             </div>
 
-            {/* Main Featured Image */}
-            <div className="w-full h-[320px] md:h-[480px] rounded-3xl overflow-hidden border border-black/8">
-              <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
-            </div>
+            {/* Main Featured Image or YouTube Embed */}
+            {article.youtube_url ? (
+              <div className="w-full aspect-video rounded-3xl overflow-hidden border border-black/8">
+                <iframe
+                  src={`https://www.youtube.com/embed/${extractYoutubeId(article.youtube_url)}`}
+                  className="w-full h-full"
+                  allowFullScreen
+                  title={article.title}
+                />
+              </div>
+            ) : (
+              <div className="w-full h-[320px] md:h-[480px] rounded-3xl overflow-hidden border border-black/8">
+                <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+              </div>
+            )}
 
             {/* Article Body Content */}
             <div className="font-sans text-[#1C1C1C]/80 space-y-6 leading-relaxed text-base md:text-lg font-light pt-4 border-b border-black/8 pb-10">
-              {article.content.split('\n\n').map((paragraph, idx) => {
-                if (paragraph.startsWith('### ')) {
-                  return (
-                    <h3 key={idx} className="font-serif text-2xl text-[#1C1C1C] font-semibold pt-6 pb-2">
-                      {paragraph.replace('### ', '')}
-                    </h3>
-                  );
-                }
-                if (paragraph.startsWith('1. ') || paragraph.startsWith('- ')) {
-                  const items = paragraph.split('\n');
-                  return (
-                    <ul key={idx} className="space-y-3 pl-5 list-disc text-[#556260]">
-                      {items.map((it, i) => {
-                        const cleanItem = it.replace(/^[0-9\-\.\s]+/, '');
-                        // Check if bold prefix exists
-                        const boldMatch = cleanItem.match(/^\*\*(.*?)\*\*(.*)/);
-                        if (boldMatch) {
-                          return (
-                            <li key={i}>
-                              <strong className="text-[#1C1C1C] font-semibold">{boldMatch[1]}</strong>
-                              {boldMatch[2]}
-                            </li>
-                          );
-                        }
-                        return <li key={i}>{cleanItem}</li>;
-                      })}
-                    </ul>
-                  );
-                }
-                return <p key={idx}>{paragraph}</p>;
-              })}
+              {article.isHtmlContent ? (
+                <div className="rich-content text-[#1C1C1C]/80 space-y-2">
+                  {article.excerpt && (
+                    <div dangerouslySetInnerHTML={{ __html: article.excerpt }} />
+                  )}
+                  {article.content && (
+                    <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                  )}
+                </div>
+              ) : (
+                article.content.split('\n\n').map((paragraph, idx) => {
+                  if (paragraph.startsWith('### ')) {
+                    return (
+                      <h3 key={idx} className="font-serif text-2xl text-[#1C1C1C] font-semibold pt-6 pb-2">
+                        {paragraph.replace('### ', '')}
+                      </h3>
+                    );
+                  }
+                  if (paragraph.startsWith('1. ') || paragraph.startsWith('- ')) {
+                    const items = paragraph.split('\n');
+                    return (
+                      <ul key={idx} className="space-y-3 pl-5 list-disc text-[#556260]">
+                        {items.map((it, i) => {
+                          const cleanItem = it.replace(/^[0-9\-\.\s]+/, '');
+                          const boldMatch = cleanItem.match(/^\*\*(.*?)\*\*(.*)/);
+                          if (boldMatch) {
+                            return (
+                              <li key={i}>
+                                <strong className="text-[#1C1C1C] font-semibold">{boldMatch[1]}</strong>
+                                {boldMatch[2]}
+                              </li>
+                            );
+                          }
+                          return <li key={i}>{cleanItem}</li>;
+                        })}
+                      </ul>
+                    );
+                  }
+                  return <p key={idx}>{paragraph}</p>;
+                })
+              )}
             </div>
 
             {/* Newsletter section integrated inside reading page for high-end feel */}
@@ -223,6 +287,7 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
           {[
             { id: 'all', label: 'All Stories' },
             { id: 'recipes', label: 'Recipes' },
+            { id: 'media', label: 'Media' },
             { id: 'nutrition', label: 'Nutrition' },
             { id: 'mindfulness', label: 'Mindfulness' },
             { id: 'sustainability', label: 'Sustainability' }
@@ -335,7 +400,7 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
                       </h3>
 
                       <p className="font-sans text-xs text-[#556260] line-clamp-3 leading-relaxed font-light">
-                        {article.excerpt}
+                        {article.isHtmlContent ? stripHtml(article.excerpt) : article.excerpt}
                       </p>
                     </div>
                   </div>

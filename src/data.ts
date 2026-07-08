@@ -16,6 +16,7 @@ export const IMAGES = {
 export const PRODUCTS: Product[] = [
   {
     id: "prod_1",
+    brand: "Vegefarm",
     name: "Crisp Jade Winter Kale",
     price: 6.5,
     category: "produce",
@@ -25,10 +26,10 @@ export const PRODUCTS: Product[] = [
     details: "Our signature organic leafy greens. Plump, structural leaves with intense emerald pigmentation indicating high antioxidant and chlorophyll density. Ideal for salads, slow-baked chips, or raw blending.",
     benefits: ["Rich in Vitamin K & A", "Grown in biologically active soil", "Zero chemical pesticides"],
     unit: "300g Bunch",
-    rating: 4.9
   },
   {
     id: "prod_2",
+    brand: "Vegan for all",
     name: "Artisanal Sprouted Ancient Grains Basket",
     price: 18.0,
     category: "pantry",
@@ -38,10 +39,10 @@ export const PRODUCTS: Product[] = [
     details: "A premium assortment including ancient wheat species, heritage spelt, wild red rice, and organic seed varieties carefully dried to preserve active grain enzymes under 38°C.",
     benefits: ["Sprouted for high digestion", "Low glycemic response", "Stone-milled heritage variety"],
     unit: "1.2kg Selection Jar",
-    rating: 4.8
   },
   {
     id: "prod_3",
+    brand: "Beleaf",
     name: "Gourmet Midnight Truffle Mushroom Pasta",
     price: 24.5,
     category: "meals",
@@ -51,10 +52,10 @@ export const PRODUCTS: Product[] = [
     details: "Handmade by our Michelin-starred in-house culinary artisans. Includes rich, single-estate olive oil emulsion, sustainably foraged chanterelles, porcini, and fresh shaved summer truffles.",
     benefits: ["100% Chef Prepared", "Ready in 8 minutes", "Naturally creamy recipe"],
     unit: "Single Serving Bowl",
-    rating: 5.0
   },
   {
     id: "prod_4",
+    brand: "Vegebest",
     name: "Organic Heirloom Rainbow Root Carrots",
     price: 8.0,
     category: "produce",
@@ -64,10 +65,10 @@ export const PRODUCTS: Product[] = [
     details: "Sweet, crunchy roots harvested along with their deep green tops which can be made into organic pestos or stocks. Unpolished and un-waxed to protect the native soil biome benefits.",
     benefits: ["Un-waxed raw root skin", "Vivid natural anthocyanins", "Sweet earthy mineral profile"],
     unit: "500g Bunch",
-    rating: 4.9
   },
   {
     id: "prod_5",
+    brand: "Vegefarm",
     name: "Bioavailable Sprouted Soybean & Edamame Blend",
     price: 9.5,
     category: "pantry",
@@ -77,10 +78,10 @@ export const PRODUCTS: Product[] = [
     details: "An organic powerhouse designed for active lifestyle nourishment. Lightly steamed and quick-frozen or preserved dry to maintain live enzyme profiles and vibrant mineral content.",
     benefits: ["Complete protein chain", "Grown in trace-mineral soils", "Excellent fiber source"],
     unit: "450g Pouch",
-    rating: 4.7
   },
   {
     id: "prod_6",
+    brand: "Vegan for all",
     name: "Wild Fermented Kombucha Superfood Brew",
     price: 14.0,
     category: "pantry",
@@ -90,10 +91,10 @@ export const PRODUCTS: Product[] = [
     details: "Each batch fermented over 21 days in ceramic crocks using wild SCOBY cultures. Contains live probiotic strains, organic acids, and polyphenol-rich botanical infusions.",
     benefits: ["Billions of live probiotics", "Adaptogenic herb blend", "Raw & unpasteurized"],
     unit: "750ml Bottle",
-    rating: 4.8
   },
   {
     id: "prod_7",
+    brand: "Beleaf",
     name: "Organic Miso & Tahini Buddha Bowl",
     price: 19.5,
     category: "meals",
@@ -103,10 +104,10 @@ export const PRODUCTS: Product[] = [
     details: "Prepared fresh daily using certified organic grains and vegetables sourced from partner farms. No preservatives, no stabilisers — just pure, whole-food culinary artistry.",
     benefits: ["High fibre ancient grains", "Live miso cultures", "Chef-prepared daily"],
     unit: "Single Serving Bowl",
-    rating: 4.9
   },
   {
     id: "prod_8",
+    brand: "Vegebest",
     name: "Heirloom Cherry Tomato Vine Cluster",
     price: 7.5,
     category: "produce",
@@ -116,10 +117,10 @@ export const PRODUCTS: Product[] = [
     details: "Grown in open polytunnels without artificial heating. Each cluster vine-ripened for maximum brix levels and deep umami complexity. Perfect raw or slow-roasted.",
     benefits: ["High lycopene content", "Vine-ripened for peak brix", "Zero wax coating"],
     unit: "400g Vine Cluster",
-    rating: 4.6
   },
   {
     id: "prod_9",
+    brand: "Vegefarm",
     name: "Raw Activated Cashew & Herb Blend",
     price: 16.5,
     category: "pantry",
@@ -129,10 +130,10 @@ export const PRODUCTS: Product[] = [
     details: "Activation process removes enzyme inhibitors and phytic acid, dramatically improving mineral absorption. Finished with a blend of rosemary, thyme, and Himalayan mineral salt.",
     benefits: ["Enzyme-activated absorption", "Cold-dehydrated below 42°C", "Rich in healthy fats"],
     unit: "300g Jar",
-    rating: 4.7
   },
   {
     id: "prod_10",
+    brand: "Vegan for all",
     name: "Seasonal Warming Spiced Lentil Potage",
     price: 21.0,
     category: "meals",
@@ -142,7 +143,6 @@ export const PRODUCTS: Product[] = [
     details: "Each pot slow-simmered for six hours using traditional French braising methods. Uses only heirloom lentil varieties and whole hand-ground spices from certified organic farms.",
     benefits: ["Slow-cooked 6 hours", "Heirloom lentil varieties", "High iron & folate"],
     unit: "2-Serving Pot",
-    rating: 4.8
   },
 ];
 

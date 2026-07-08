@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, ShoppingBag, X, Leaf, Info, ShoppingCart } from 'lucide-react';
+import { Menu, ShoppingBag, X, Info, ShoppingCart } from 'lucide-react';
 import { ViewType } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -47,12 +47,11 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
               className="flex items-center gap-2 text-left group"
               id="brand-logo"
             >
-              <div className="w-8 h-8 rounded-full bg-[#013120] flex items-center justify-center text-[#edc14d] border border-[#a3d1b8]/10 group-hover:bg-[#a3d1b8]/20 transition-all">
-                <Leaf size={16} className="text-[#edc14d] group-hover:rotate-12 transition-transform" />
-              </div>
-              <span className="font-serif text-lg tracking-wider font-semibold text-[#1C1C1C] group-hover:text-[#edc14d] transition-colors uppercase">
-                Plantsource Wholesale
-              </span>
+              <img
+                src="/plant/logo.jpg"
+                alt="Plantsource Wholesale"
+                className="h-10 w-auto object-contain rounded-md group-hover:scale-105 transition-transform"
+              />
             </button>
           </div>
 
@@ -118,10 +117,11 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
 
             {/* Menu Header Brand */}
             <div className="flex items-center gap-3 mb-12 border-b border-black/8 pb-6">
-              <Leaf size={24} className="text-[#edc14d]" />
-              <span className="font-serif text-2xl tracking-widest text-[#1C1C1C] font-semibold uppercase">
-                Plantsource Wholesale
-              </span>
+              <img
+                src="/plant/logo.jpg"
+                alt="Plantsource Wholesale"
+                className="h-12 w-auto object-contain rounded-md"
+              />
             </div>
 
             {/* Nav Items Link List */}

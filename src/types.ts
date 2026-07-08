@@ -4,12 +4,12 @@ export interface Product {
   price: number;
   category: 'produce' | 'pantry' | 'meals';
   categoryLabel: string;
+  brand?: string;
   image: string;
   description: string;
   details: string;
   benefits: string[];
   unit: string;
-  rating: number;
 }
 
 export interface Article {
@@ -17,13 +17,17 @@ export interface Article {
   title: string;
   excerpt: string;
   content: string;
-  category: 'sustainability' | 'nutrition' | 'recipes' | 'mindfulness';
+  category: 'sustainability' | 'nutrition' | 'recipes' | 'mindfulness' | 'media';
   categoryLabel: string;
   readTime: string;
   date: string;
   author: string;
   image: string;
   featured?: boolean;
+  slug?: string;
+  youtube_url?: string;
+  youtube_thumbnail?: string;
+  isHtmlContent?: boolean;
 }
 
 export interface CartItem {

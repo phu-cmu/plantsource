@@ -286,7 +286,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
           className="flex gap-5 overflow-x-auto scroll-smooth pb-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {[...PRODUCTS].sort((a, b) => b.rating - a.rating).slice(0, 10).map((product, index) => (
+          {PRODUCTS.slice(0, 10).map((product, index) => (
             <div
               key={product.id}
               className="group bg-[#013120]/6 border border-black/8 rounded-2xl overflow-hidden flex flex-col hover:border-black/12 hover:scale-[1.02] transition-all duration-300 flex-shrink-0 w-[240px]"
@@ -313,10 +313,6 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                   {index + 1}
                 </span>
 
-                {/* Rating */}
-                <span className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-[#edc14d] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border border-white/10">
-                  <Star size={9} className="fill-current" /> {product.rating}
-                </span>
               </div>
 
               {/* Info */}
