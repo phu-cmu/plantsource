@@ -451,24 +451,6 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             </article>
           ))}
         </div>
-
-        {/* YouTube Videos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-          {[
-            { id: '7hNtuYT4Gaw' },
-            { id: 'nrDlg17dmWw' },
-          ].map((video) => (
-            <div key={video.id} className="rounded-2xl overflow-hidden border border-black/10 aspect-video">
-              <iframe
-                src={`https://www.youtube.com/embed/${video.id}`}
-                title="Plantsource video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* 8. Join the Movement / Call-To-Action (Image 3) */}
