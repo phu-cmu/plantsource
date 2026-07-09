@@ -48,10 +48,13 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
               id="brand-logo"
             >
               <img
-                src="/plant/logo.jpg"
+                src="/plant/logo-icon.png"
                 alt="Plantsource Wholesale"
-                className="h-10 w-auto object-contain rounded-md group-hover:scale-105 transition-transform"
+                className="h-9 w-auto object-contain group-hover:scale-105 transition-transform"
               />
+              <span className="font-serif text-lg tracking-wider font-semibold text-[#1C1C1C] group-hover:text-[#edc14d] transition-colors uppercase">
+                Plantsource Wholesale
+              </span>
             </button>
           </div>
 
@@ -118,10 +121,13 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
             {/* Menu Header Brand */}
             <div className="flex items-center gap-3 mb-12 border-b border-black/8 pb-6">
               <img
-                src="/plant/logo.jpg"
+                src="/plant/logo-icon.png"
                 alt="Plantsource Wholesale"
-                className="h-12 w-auto object-contain rounded-md"
+                className="h-12 w-auto object-contain"
               />
+              <span className="font-serif text-2xl tracking-widest text-[#1C1C1C] font-semibold uppercase">
+                Plantsource Wholesale
+              </span>
             </div>
 
             {/* Nav Items Link List */}

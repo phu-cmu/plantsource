@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\StoryController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,8 @@ Route::prefix('explore')->group(function () {
     Route::get('/stories', [StoryController::class, 'index']);
     Route::get('/stories/{slug}', [StoryController::class, 'show']);
 });
+
+Route::post('/contact', [ContactController::class, 'send'])->middleware('throttle:5,1');
 
 Route::middleware('auth:sanctum')->group(function () {
     // Protected API routes go here

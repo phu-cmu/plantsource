@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Globe, Sparkles, Send, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
+
 export default function ContactView() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    subject: 'wholesale',
+    subject: 'business',
     message: ''
   });
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       alert('Please fill in all required fields.');
@@ -24,11 +27,21 @@ export default function ContactView() {
     }
 
     setSubmitStatus('submitting');
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${API_BASE}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error('Request failed');
+
       setSubmitStatus('success');
-      setFormData({ name: '', email: '', subject: 'wholesale', message: '' });
+      setFormData({ name: '', email: '', subject: 'business', message: '' });
       setTimeout(() => setSubmitStatus('idle'), 5000);
-    }, 1800);
+    } catch (err) {
+      setErrorMessage('Something went wrong while sending your message. Please try again later.');
+      setSubmitStatus('error');
+    }
   };
 
   return (
@@ -128,6 +141,13 @@ export default function ContactView() {
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
+                  {submitStatus === 'error' && (
+                    <div className="flex items-center gap-2 bg-rose-500/10 border border-rose-500/30 text-rose-600 rounded-2xl py-3 px-4 text-xs font-sans">
+                      <AlertTriangle size={14} />
+                      {errorMessage}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Name input */}
                     <div className="space-y-2">
