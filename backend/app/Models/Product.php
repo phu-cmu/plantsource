@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -38,6 +39,16 @@ class Product extends Model
         static::creating(function (Product $product) {
             if (empty($product->slug)) {
                 $product->slug = str($product->name)->slug();
+            }
+        });
+
+        static::deleting(function (Product $product) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            if (! empty($product->images)) {
+                Storage::disk('public')->delete($product->images);
             }
         });
     }
