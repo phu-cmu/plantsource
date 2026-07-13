@@ -57,10 +57,12 @@ class ProductController extends Controller
             'category_label' => $product->category->name ?? '',
             'brand'          => $product->brand->name ?? null,
             'image'          => $product->image ? asset('storage/' . $product->image) : '',
+            'images'         => collect($product->images ?? [])->map(fn ($path) => asset('storage/' . $path))->values(),
             'description'    => $product->description ?? '',
             'details'        => $product->details ?? '',
             'benefits'       => $product->benefits ?? [],
             'unit'           => $product->unit ?? '',
+            'is_featured'    => (bool) $product->is_featured,
         ];
     }
 }

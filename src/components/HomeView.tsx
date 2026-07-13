@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRight, Leaf, ShieldAlert, Heart, Sprout, ShieldCheck, Sparkles, AlertCircle, Star, Trophy, Truck, Package, Award, Headphones, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ViewType, Product, Article } from '../types';
-import { IMAGES, ARTICLES, PRODUCTS } from '../data';
+import { IMAGES, ARTICLES } from '../data';
 import { motion } from 'motion/react';
 
 interface HomeViewProps {
@@ -11,10 +11,37 @@ interface HomeViewProps {
   setSelectedProductId: (id: string | null) => void;
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
+
 export default function HomeView({ setView, setCategoryFilter, setSelectedArticleId, setSelectedProductId }: HomeViewProps) {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/products`)
+      .then(res => res.json())
+      .then(json => {
+        if (!Array.isArray(json.data)) return;
+        const normalized: Product[] = json.data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category as Product['category'],
+          categoryLabel: p.category_label,
+          brand: p.brand ?? undefined,
+          image: p.image,
+          images: p.images ?? [],
+          description: p.description,
+          details: p.details,
+          benefits: p.benefits ?? [],
+          unit: p.unit,
+          isFeatured: p.is_featured ?? false,
+        }));
+        setFeaturedProducts(normalized.filter(p => p.isFeatured));
+      })
+      .catch(() => {});
+  }, []);
 
   const handleCategoryNav = (cat: 'produce' | 'pantry' | 'meals') => {
     setCategoryFilter(cat);
@@ -286,7 +313,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
           className="flex gap-5 overflow-x-auto scroll-smooth pb-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {PRODUCTS.slice(0, 10).map((product, index) => (
+          {featuredProducts.slice(0, 10).map((product, index) => (
             <div
               key={product.id}
               className="group bg-[#013120]/6 border border-black/8 rounded-2xl overflow-hidden flex flex-col hover:border-black/12 hover:scale-[1.02] transition-all duration-300 flex-shrink-0 w-[240px]"
@@ -323,9 +350,6 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                 <h3 className="font-serif text-sm font-medium text-[#1C1C1C] leading-snug line-clamp-2 group-hover:text-[#edc14d] transition-colors flex-1">
                   {product.name}
                 </h3>
-                <span className="font-serif text-base font-bold text-[#1C1C1C]">
-                  ${product.price.toFixed(2)}
-                </span>
                 <button
                   onClick={() => handleViewProduct(product.id)}
                   className="w-full mt-1 py-2 rounded-full border border-[#edc14d]/40 hover:border-[#edc14d] hover:bg-[#edc14d]/10 text-[#edc14d] font-sans text-[10px] font-bold tracking-widest uppercase transition-all cursor-pointer"

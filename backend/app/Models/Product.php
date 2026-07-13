@@ -13,12 +13,14 @@ class Product extends Model
     protected $fillable = [
         'category_id', 'brand_id', 'name', 'slug', 'unit',
         'description', 'details',
-        'benefits', 'image', 'is_active', 'sort_order',
+        'benefits', 'image', 'images', 'is_active', 'is_featured', 'sort_order',
     ];
 
     protected $casts = [
-        'benefits'  => 'array',
-        'is_active' => 'boolean',
+        'benefits'    => 'array',
+        'images'      => 'array',
+        'is_active'   => 'boolean',
+        'is_featured' => 'boolean',
     ];
 
     public function category(): BelongsTo

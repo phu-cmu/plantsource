@@ -6,10 +6,12 @@ export interface Product {
   categoryLabel: string;
   brand?: string;
   image: string;
+  images?: string[];
   description: string;
   details: string;
   benefits: string[];
   unit: string;
+  isFeatured?: boolean;
 }
 
 export interface Article {

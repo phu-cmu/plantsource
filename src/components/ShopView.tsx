@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingBasket, Eye, X, Sparkles } from 'lucide-react';
+import { Search, ShoppingBasket, Eye, X, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 import { PRODUCTS } from '../data';
 import { motion, AnimatePresence } from 'motion/react';
@@ -19,6 +19,7 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
   const [sortBy, setSortBy] = useState<'default' | 'nameAsc' | 'nameDesc'>('default');
   const [brandFilter, setBrandFilter] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
   const [apiProducts, setApiProducts] = useState<Product[]>([]);
 
@@ -34,6 +35,7 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
           categoryLabel: p.category_label,
           brand: p.brand ?? undefined,
           image: p.image,
+          images: p.images ?? [],
           description: p.description,
           details: p.details,
           benefits: p.benefits ?? [],
@@ -52,6 +54,14 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
       onClearSelectedProductId?.();
     }
   }, [selectedProductId, apiProducts]);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [selectedProduct]);
+
+  const productGallery = selectedProduct
+    ? Array.from(new Set([selectedProduct.image, ...(selectedProduct.images ?? [])].filter(Boolean)))
+    : [];
 
   const handleAddToCartClick = (prod: Product, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -261,12 +271,49 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
                 </button>
 
                 {/* Left image segment */}
-                <div className="md:w-1/2 min-h-[250px] md:min-h-auto relative bg-black/40">
-                  <img
-                    src={selectedProduct.image}
-                    alt={selectedProduct.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
+                <div className="md:w-1/2 relative bg-black/40 flex flex-col">
+                  <div className="relative flex-1 min-h-[280px]">
+                    <img
+                      src={productGallery[activeImageIndex] ?? selectedProduct.image}
+                      alt={selectedProduct.name}
+                      className="absolute inset-0 w-full h-full object-contain"
+                    />
+
+                    {productGallery.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => setActiveImageIndex((i) => (i - 1 + productGallery.length) % productGallery.length)}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors cursor-pointer"
+                          aria-label="Previous image"
+                        >
+                          <ChevronLeft size={18} />
+                        </button>
+                        <button
+                          onClick={() => setActiveImageIndex((i) => (i + 1) % productGallery.length)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors cursor-pointer"
+                          aria-label="Next image"
+                        >
+                          <ChevronRight size={18} />
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  {productGallery.length > 1 && (
+                    <div className="shrink-0 flex gap-2 p-3 bg-black/20 overflow-x-auto">
+                      {productGallery.map((src, idx) => (
+                        <button
+                          key={src + idx}
+                          onClick={() => setActiveImageIndex(idx)}
+                          className={`shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-colors cursor-pointer ${
+                            idx === activeImageIndex ? 'border-[#edc14d]' : 'border-transparent opacity-70 hover:opacity-100'
+                          }`}
+                        >
+                          <img src={src} alt={`${selectedProduct.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Right text informational segment */}

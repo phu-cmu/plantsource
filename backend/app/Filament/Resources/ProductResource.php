@@ -92,12 +92,22 @@ class ProductResource extends Resource
                 Forms\Components\Section::make('Product Image')
                     ->schema([
                         Forms\Components\FileUpload::make('image')
+                            ->label('Main Image')
                             ->image()
                             ->required()
                             ->disk('public')
                             ->directory('products')
-                            ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('4:3')
+                            ->columnSpanFull(),
+
+                        Forms\Components\FileUpload::make('images')
+                            ->label('Add More Images')
+                            ->helperText('Optional. Extra photos shown as a slider in the product detail view.')
+                            ->image()
+                            ->multiple()
+                            ->reorderable()
+                            ->appendFiles()
+                            ->disk('public')
+                            ->directory('products')
                             ->columnSpanFull(),
                     ]),
 
@@ -108,11 +118,16 @@ class ProductResource extends Resource
                             ->default(true)
                             ->columnSpan(1),
 
+                        Forms\Components\Toggle::make('is_featured')
+                            ->label('Show in "Top 10 Most Favorite" (Homepage)')
+                            ->default(false)
+                            ->columnSpan(1),
+
                         Forms\Components\TextInput::make('sort_order')
                             ->label('Sort Order')
                             ->numeric()
                             ->default(0)
-                            ->helperText('Lower number = shown first.')
+                            ->helperText('Lower number = shown first (also used to order the Top 10 Most Favorite list).')
                             ->columnSpan(1),
                     ])
                     ->columns(2),
@@ -151,6 +166,11 @@ class ProductResource extends Resource
                     ->boolean()
                     ->toggleable(),
 
+                Tables\Columns\IconColumn::make('is_featured')
+                    ->label('Top 10')
+                    ->boolean()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('sort_order')
                     ->label('Order')
                     ->sortable()
@@ -173,6 +193,9 @@ class ProductResource extends Resource
 
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active'),
+
+                Tables\Filters\TernaryFilter::make('is_featured')
+                    ->label('Top 10 Most Favorite'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
