@@ -51,5 +51,24 @@ class Product extends Model
                 Storage::disk('public')->delete($product->images);
             }
         });
+
+        static::updating(function (Product $product) {
+            if ($product->isDirty('image')) {
+                $oldImage = $product->getOriginal('image');
+                if ($oldImage) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+            }
+
+            if ($product->isDirty('images')) {
+                $oldImages = $product->getOriginal('images') ?? [];
+                $newImages = $product->images ?? [];
+                $removedImages = array_diff($oldImages, $newImages);
+
+                if (! empty($removedImages)) {
+                    Storage::disk('public')->delete(array_values($removedImages));
+                }
+            }
+        });
     }
 }
