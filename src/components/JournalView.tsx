@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Bookmark, ArrowRight, Check, Sparkles, BookOpen, Clock, User, Share2 } from 'lucide-react';
 import { Article } from '../types';
-import { ARTICLES, IMAGES } from '../data';
+import { ARTICLES } from '../data';
 import { motion, AnimatePresence } from 'motion/react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
@@ -278,7 +278,7 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
             Share & Connect
           </h1>
           <p className="font-sans text-sm md:text-base text-[#556260] max-w-2xl mx-auto font-light leading-relaxed">
-            Curated insights on high-end organic wellness, seasonal recipes, and the art of sustainable living.
+            Stay up to date with new products, seasonal recipes, industry insights, and everything happening at Plantsource.
           </p>
         </div>
 
@@ -287,10 +287,7 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
           {[
             { id: 'all', label: 'All Stories' },
             { id: 'recipes', label: 'Recipes' },
-            { id: 'media', label: 'Media' },
-            { id: 'nutrition', label: 'Nutrition' },
-            { id: 'mindfulness', label: 'Mindfulness' },
-            { id: 'sustainability', label: 'Sustainability' }
+            { id: 'media', label: 'Media' }
           ].map(tag => (
             <button
               key={tag.id}
@@ -309,53 +306,6 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
 
         {/* Articles List matching the Journal Feed design precisely */}
         <div className="space-y-16">
-
-          {/* Main big featured article on top (Soil Sustainability) */}
-          {activeTag === 'all' && (
-            <div
-              onClick={() => setSelectedArticleId('art_1')}
-              className="group bg-[#013120]/6 border border-black/8 rounded-3xl overflow-hidden cursor-pointer flex flex-col lg:flex-row transition-all duration-300 hover:bg-[#013120]/10"
-            >
-              {/* Image side */}
-              <div className="lg:w-1/2 min-h-[300px] lg:min-h-auto relative">
-                <img
-                  src={IMAGES.sunriseFarm}
-                  alt="Regenerative agriculture and fertile biological soils"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-102"
-                />
-              </div>
-              {/* Content side */}
-              <div className="p-8 md:p-12 lg:w-1/2 flex flex-col justify-center space-y-6">
-                <div className="flex items-center gap-3">
-                  <span className="border border-[#edc14d]/30 text-[#edc14d] px-3.5 py-1 rounded-full font-sans text-[11px] tracking-wider uppercase font-bold bg-[#edc14d]/5">
-                    SUSTAINABILITY
-                  </span>
-                  <span className="text-[#8A9490] font-sans text-[11px] uppercase tracking-wider">
-                    12 MIN READ
-                  </span>
-                </div>
-
-                <h2 className="font-serif text-3xl md:text-4xl text-[#1C1C1C] font-medium hover:text-[#edc14d] transition-colors leading-tight">
-                  The Future of Soil: Why Regenerative Agriculture is the New Organic.
-                </h2>
-
-                <p className="font-sans text-sm text-[#556260] leading-relaxed font-light">
-                  Discover how restoring the earth's natural rhythms creates a more potent, nutrient-dense harvest for your kitchen. We examine cover cropping and multi-biodiverse biology.
-                </p>
-
-                <div className="flex items-center justify-between pt-4 border-t border-black/8">
-                  <span
-                    className="text-[#edc14d] font-sans text-xs font-semibold tracking-widest flex items-center gap-2 uppercase"
-                  >
-                    Read Full Story <ArrowRight size={14} />
-                  </span>
-                  <span className="text-[#AAB0AE] font-sans text-xs font-light uppercase">
-                    MAY 28, 2026
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Grid of secondary articles containing specific card layouts from Image 2 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -451,8 +401,8 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
             <h2 className="font-serif text-3xl text-white font-medium">
               Join the Inner Circle.
             </h2>
-            <p className="font-sans text-sm text-[#556260] font-light leading-relaxed">
-              Receive weekly seasonal recipes, holistic wellness reports, and exclusive farm-to-table reserve notifications directly in your inbox.
+            <p className="font-sans text-sm text-white font-light leading-relaxed">
+              Get the latest on new arrivals, recipe ideas, exclusive offers, and everything happening at Plantsource.
             </p>
 
             <form onSubmit={handleNewsletterSubmit} className="space-y-4 pt-4">

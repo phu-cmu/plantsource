@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRight, Leaf, ShieldAlert, Heart, Sprout, ShieldCheck, Sparkles, AlertCircle, Star, Trophy, Truck, Package, Award, Headphones, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Leaf, ShieldAlert, Heart, Sprout, ShieldCheck, AlertCircle, Star, Trophy, Truck, Package, Award, Headphones, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ViewType, Product, Article } from '../types';
 import { IMAGES, ARTICLES } from '../data';
 import { motion } from 'motion/react';
@@ -100,10 +100,10 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             className="space-y-6"
           >
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl tracking-tight text-white leading-tight font-bold">
-              Purity In Every Bite
+              Rooted in Plants. Rich in Flavor.
             </h1>
             <p className="font-sans text-lg md:text-2xl text-white font-light max-w-2xl mx-auto leading-relaxed">
-              Experience the pinnacle of plant-based culinary art. Sustainably sourced, ethically harvested, and prepared for the discerning palate.
+              Premium vegan and vegetarian products that bring authentic flavor, quality, and convenience to every meal.
             </p>
             <div className="pt-6">
               <button
@@ -367,44 +367,44 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] tracking-wide">
-              The Plantsource Wholesale Philosophy
+              Why Choose Plantsource
             </h2>
             <p className="font-sans text-base md:text-lg text-[#556260] max-w-2xl mx-auto font-light leading-relaxed">
-              Commitment to purity isn't just a tagline, it's our core operating principle.
+              Premium plant-based products carefully selected to deliver quality, taste, and consistency in every order.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1: 100% Organic */}
+            {/* Card 1: 100% Plant-Based */}
             <div className="flex flex-col items-center text-center p-10 bg-[#F7F4EF] border border-black/8 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
               <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-black/8 group-hover:bg-[#1A4233] transition-colors">
                 <Sprout size={28} className="text-[#edc14d]" />
               </div>
-              <h4 className="font-serif text-xl font-semibold text-[#1C1C1C] mb-3">100% Organic</h4>
+              <h4 className="font-serif text-xl font-semibold text-[#1C1C1C] mb-3">100% Plant-Based</h4>
               <p className="font-sans text-sm text-[#556260] leading-relaxed font-light">
-                No synthetic pesticides or fertilizers. Ever. Just nature in its purest, most vitalizing form.
+                Made entirely from plant-based ingredients for delicious, satisfying meals.
               </p>
             </div>
 
-            {/* Card 2: Carbon Neutral */}
+            {/* Card 2: Premium Quality */}
             <div className="flex flex-col items-center text-center p-10 bg-[#F7F4EF] border border-black/8 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
               <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-black/8 group-hover:bg-[#1A4233] transition-colors">
-                <Leaf size={28} className="text-[#edc14d]" />
+                <ShieldCheck size={28} className="text-[#edc14d]" />
               </div>
-              <h4 className="font-serif text-xl font-semibold text-[#1C1C1C] mb-3">Carbon Neutral</h4>
+              <h4 className="font-serif text-xl font-semibold text-[#1C1C1C] mb-3">Premium Quality</h4>
               <p className="font-sans text-sm text-[#556260] leading-relaxed font-light">
-                Our delivery courier grids and fully compostable packaging systems are meticulously designed with local soil health in mind.
+                Carefully sourced from trusted manufacturers to ensure consistent quality and authentic flavor.
               </p>
             </div>
 
             {/* Card 3: Nutrition First */}
             <div className="flex flex-col items-center text-center p-10 bg-[#F7F4EF] border border-black/8 rounded-3xl hover:translate-y-[-8px] transition-all duration-300 group">
               <div className="w-16 h-16 bg-[#013120] rounded-full flex items-center justify-center mb-6 text-[#edc14d] border border-black/8 group-hover:bg-[#1A4233] transition-colors">
-                <Sparkles size={28} className="text-[#edc14d]" />
+                <Leaf size={28} className="text-[#edc14d]" />
               </div>
               <h4 className="font-serif text-xl font-semibold text-[#1C1C1C] mb-3">Nutrition First</h4>
               <p className="font-sans text-sm text-[#556260] leading-relaxed font-light">
-                Formulated by functional nutritional experts to ensure every molecule absorbed boosts cellular vitality.
+                Made with non-GMO soy protein and carefully selected ingredients to deliver great taste and balanced plant-based nutrition.
               </p>
             </div>
           </div>
@@ -485,24 +485,24 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-8">
             <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] tracking-wide">
-              Join the Movement.
+              Bringing Plant-Based to Every Table
             </h2>
             <p className="font-sans text-base md:text-lg text-[#556260] font-light leading-relaxed">
-              Experience the Plantsource Wholesale lifestyle through our seasonal farm-fresh harvests, curated recipes, and exquisite botanical wellness workshops.
+              Discover premium vegan and vegetarian products made with quality ingredients, authentic flavors, and trusted manufacturing—perfect for restaurants, retailers, and home kitchens alike.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 pt-4">
               <button
-                onClick={() => handleViewAllRecipes()}
+                onClick={() => handleNavCategoryAll()}
                 className="bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-8 py-5 rounded-full font-sans text-xs font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#FDD05A]/10 cursor-pointer"
               >
-                BROWSE OUR RECIPES
+                Explore Products
               </button>
               <button
-                onClick={() => handleNavCategoryAll()}
+                onClick={() => handleViewAllRecipes()}
                 className="border border-[#edc14d]/30 hover:border-[#edc14d] text-[#1C1C1C] hover:bg-black/5 px-8 py-5 rounded-full font-sans text-xs font-bold tracking-widest uppercase transition-all cursor-pointer"
               >
-                VIEW OUR PRODUCT
+                Browse Recipes
               </button>
             </div>
           </div>
@@ -592,10 +592,14 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               </h4>
               <ul className="space-y-3 font-sans text-sm text-[#8A9490] font-light">
                 <li>
-                  <a href="#" className="hover:text-[#1C1C1C] transition-colors">Shipping Policy</a>
+                  <button onClick={() => { setView('shipping-policy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
+                    Shipping Policy
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-[#1C1C1C] transition-colors">Refund Policy</a>
+                  <button onClick={() => { setView('shipping-policy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
+                    Refund Policy
+                  </button>
                 </li>
               </ul>
             </div>

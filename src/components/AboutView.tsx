@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sprout, Trash2, Heart, Award, ShieldCheck, MapPin, Truck, Leaf, RefreshCw } from 'lucide-react';
+import { Trash2, Heart, ShieldCheck, MapPin, Truck, Leaf, Snowflake } from 'lucide-react';
 import { ViewType } from '../types';
 import { IMAGES } from '../data';
 import { motion } from 'motion/react';
@@ -22,15 +22,15 @@ export default function AboutView({ setView }: AboutViewProps) {
               THE PLANTSOURCE WHOLESALE PHILOSOPHY
             </h1>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#1C1C1C] font-bold leading-tight">
-              A Philosophy of Earth-First Living
+              Your Trusted Plant-Based Food Partner
             </h2>
             <div className="w-16 h-1 bg-[#edc14d] rounded-full" />
 
             <p className="font-sans text-base md:text-lg text-[#556260] font-light leading-relaxed">
-              We don't just cook; we cultivate. Every ingredient entering our workshop represents the vital exchange between the soil and the soul. True biological wellness isn't a destination—it is the biological fuel we choose for our daily physical journeys.
+              At Plantsource, we're passionate about making plant-based eating simple, delicious, and accessible. We carefully source premium vegan and vegetarian products from trusted manufacturers, ensuring every item meets high standards for quality, taste, and food safety.
             </p>
             <p className="font-sans text-sm md:text-base text-[#8A9490] font-light leading-relaxed">
-              Our pledge to 100% organic, vegan culinary craft is absolute and unwavering. By stripping away processing mechanisms, chemical agents, and unnecessary sugars, we expose the deep, exquisite flavors designed by nature itself. The result is a dining and home pantry standard as pristine as it is sensory and sophisticated.
+              Whether you're serving customers, stocking shelves, or preparing meals at home, Plantsource is your trusted partner for authentic plant-based foods.
             </p>
 
             <div className="pt-4 flex flex-wrap gap-4">
@@ -38,13 +38,13 @@ export default function AboutView({ setView }: AboutViewProps) {
                 onClick={() => { setView('shop'); window.scrollTo({ top: 0, behavior: 'instant' }); }}
                 className="bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-8 py-4 rounded-full font-sans text-xs font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-lg cursor-pointer"
               >
-                Browse Sourcing
+                Browse Products
               </button>
               <button
                 onClick={() => { setView('contact'); window.scrollTo({ top: 0, behavior: 'instant' }); }}
                 className="border border-[#edc14d]/30 text-[#1C1C1C] hover:bg-black/5 px-8 py-4 rounded-full font-sans text-xs font-bold tracking-widest uppercase transition-all cursor-pointer"
               >
-                Partner with us
+                Wholesale Inquiry
               </button>
             </div>
           </div>
@@ -64,36 +64,36 @@ export default function AboutView({ setView }: AboutViewProps) {
         {/* 2. Core Operational Pillars (Image 3 Cards) */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-          {/* Pillar 1: 100% Organic */}
+          {/* Pillar 1: Sustainably Minded */}
           <div className="bg-[#013120]/6 border border-black/8 rounded-3xl p-8 space-y-4 hover:border-black/12 transition-colors">
             <div className="w-12 h-12 bg-[#013120] rounded-full flex items-center justify-center text-[#edc14d] border border-black/8">
-              <Sprout size={20} />
+              <Leaf size={20} />
             </div>
-            <h3 className="font-serif text-xl font-semibold text-[#1C1C1C]">100% Certified Organic</h3>
+            <h3 className="font-serif text-xl font-semibold text-[#1C1C1C]">Sustainably Minded</h3>
             <p className="font-sans text-sm text-[#556260] font-light leading-relaxed">
-              We compile and analyze dynamic chemical soil reports. Sourced exclusively from small family estates that preserve trace mineral structures.
+              Choosing plant-based foods helps support a more sustainable future for our planet.
             </p>
           </div>
 
-          {/* Pillar 2: Neutral Base */}
+          {/* Pillar 2: Frozen Freshness */}
           <div className="bg-[#013120]/6 border border-black/8 rounded-3xl p-8 space-y-4 hover:border-black/12 transition-colors">
             <div className="w-12 h-12 bg-[#013120] rounded-full flex items-center justify-center text-[#edc14d] border border-black/8">
-              <RefreshCw size={20} />
+              <Snowflake size={20} />
             </div>
-            <h3 className="font-serif text-xl font-semibold text-[#1C1C1C]">Carbon Closed Loop</h3>
+            <h3 className="font-serif text-xl font-semibold text-[#1C1C1C]">Frozen Freshness</h3>
             <p className="font-sans text-sm text-[#556260] font-light leading-relaxed">
-              Our logistics frameworks operate on zero waste objectives. Transportation runs inside integrated, localized dispatch networks.
+              Maintained below -18°C (0°F) throughout storage and transportation to preserve freshness and quality.
             </p>
           </div>
 
-          {/* Pillar 3: Culinary Science */}
+          {/* Pillar 3: Premium Quality */}
           <div className="bg-[#013120]/6 border border-black/8 rounded-3xl p-8 space-y-4 hover:border-black/12 transition-colors">
             <div className="w-12 h-12 bg-[#013120] rounded-full flex items-center justify-center text-[#edc14d] border border-black/8">
-              <Award size={20} />
+              <ShieldCheck size={20} />
             </div>
-            <h3 className="font-serif text-xl font-semibold text-[#1C1C1C]">Culinary Gastronomy</h3>
+            <h3 className="font-serif text-xl font-semibold text-[#1C1C1C]">Premium Quality</h3>
             <p className="font-sans text-sm text-[#556260] font-light leading-relaxed">
-              Merging deep chemical dietetic knowledge with elite plating and preparation. Healthy living never sacrifices gourmet pleasure.
+              Carefully sourced from trusted manufacturers to ensure consistent quality and authentic flavor.
             </p>
           </div>
 

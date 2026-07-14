@@ -7,6 +7,7 @@ import ShopView from './components/ShopView';
 import AboutView from './components/AboutView';
 import JournalView from './components/JournalView';
 import ContactView from './components/ContactView';
+import ShippingPolicyView from './components/ShippingPolicyView';
 import CartDrawer from './components/CartDrawer';
 import { ViewType, Product, CartItem } from './types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -17,6 +18,7 @@ const pathToView: Record<string, ViewType> = {
   '/story': 'story',
   '/journal': 'journal',
   '/contact': 'contact',
+  '/shipping-policy': 'shipping-policy',
 };
 
 const viewToPath: Record<ViewType, string> = {
@@ -25,6 +27,7 @@ const viewToPath: Record<ViewType, string> = {
   story: '/story',
   journal: '/journal',
   contact: '/contact',
+  'shipping-policy': '/shipping-policy',
 };
 
 export default function App() {
@@ -156,6 +159,10 @@ export default function App() {
             
             {view === 'contact' && (
               <ContactView />
+            )}
+
+            {view === 'shipping-policy' && (
+              <ShippingPolicyView />
             )}
           </motion.div>
         </AnimatePresence>
