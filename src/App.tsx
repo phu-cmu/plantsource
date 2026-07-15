@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import Header from './components/Header';
 import HomeView from './components/HomeView';
 import ShopView from './components/ShopView';
@@ -12,6 +13,9 @@ import CartDrawer from './components/CartDrawer';
 import { ViewType, Product, CartItem } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 
+// pdfjs-dist / canvas rendering only works in the browser — never render this on the server.
+const CatalogView = dynamic(() => import('./components/CatalogView'), { ssr: false });
+
 const pathToView: Record<string, ViewType> = {
   '/': 'home',
   '/shop': 'shop',
@@ -19,6 +23,7 @@ const pathToView: Record<string, ViewType> = {
   '/journal': 'journal',
   '/contact': 'contact',
   '/shipping-policy': 'shipping-policy',
+  '/catalog': 'catalog',
 };
 
 const viewToPath: Record<ViewType, string> = {
@@ -28,6 +33,7 @@ const viewToPath: Record<ViewType, string> = {
   journal: '/journal',
   contact: '/contact',
   'shipping-policy': '/shipping-policy',
+  catalog: '/catalog',
 };
 
 export default function App() {
@@ -163,6 +169,10 @@ export default function App() {
 
             {view === 'shipping-policy' && (
               <ShippingPolicyView />
+            )}
+
+            {view === 'catalog' && (
+              <CatalogView />
             )}
           </motion.div>
         </AnimatePresence>

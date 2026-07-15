@@ -37,4 +37,4 @@ export interface CartItem {
   quantity: number;
 }
 
-export type ViewType = 'home' | 'shop' | 'story' | 'journal' | 'contact' | 'shipping-policy';
+export type ViewType = 'home' | 'shop' | 'story' | 'journal' | 'contact' | 'shipping-policy' | 'catalog';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, ShoppingBag, X, Info, ShoppingCart } from 'lucide-react';
+import { Menu, ShoppingBag, X, Info, ShoppingCart, ChevronDown } from 'lucide-react';
 import { ViewType } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -12,13 +12,27 @@ interface HeaderProps {
 
 export default function Header({ currentView, setView, cartCount, onCartClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [foodsMenuOpen, setFoodsMenuOpen] = useState(false);
+  const [mobileFoodsOpen, setMobileFoodsOpen] = useState(false);
 
   const navItems = [
     { id: 'home', label: 'HOME' },
-    { id: 'shop', label: 'PRODUCT' },
+    {
+      id: 'shop',
+      label: 'OUR FOODS',
+      children: [
+        { id: 'shop', label: 'Product' },
+        { id: 'catalog', label: 'Catalog' },
+      ],
+    },
     { id: 'story', label: 'OUR STORY' },
     { id: 'journal', label: 'EXPLORE' },
   ] as const;
+
+  const isItemActive = (item: (typeof navItems)[number]): boolean =>
+    'children' in item
+      ? item.children.some((child) => child.id === currentView)
+      : currentView === item.id;
 
   const handleNavClick = (viewId: ViewType) => {
     setView(viewId);
@@ -60,27 +74,87 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
 
           {/* Center navigation links on Desktop */}
           <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`font-sans text-xs tracking-widest font-semibold transition-all uppercase relative py-2 ${
-                  currentView === item.id
-                    ? 'text-[#edc14d]'
-                    : 'text-[#556260] hover:text-[#1C1C1C]'
-                }`}
-                id={`nav-${item.id}`}
-              >
-                {item.label}
-                {currentView === item.id && (
-                  <motion.div
-                    layoutId="activeNavIndicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#edc14d] rounded-full"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-              </button>
-            ))}
+            {navItems.map((item) => {
+              const active = isItemActive(item);
+
+              if ('children' in item) {
+                return (
+                  <div
+                    key={item.id}
+                    className="relative"
+                    onMouseEnter={() => setFoodsMenuOpen(true)}
+                    onMouseLeave={() => setFoodsMenuOpen(false)}
+                  >
+                    <button
+                      onClick={() => handleNavClick(item.id)}
+                      className={`flex items-center gap-1 font-sans text-xs tracking-widest font-semibold transition-all uppercase relative py-2 cursor-pointer ${
+                        active ? 'text-[#edc14d]' : 'text-[#556260] hover:text-[#1C1C1C]'
+                      }`}
+                      id="nav-our-foods"
+                    >
+                      {item.label}
+                      <ChevronDown size={13} className={`transition-transform ${foodsMenuOpen ? 'rotate-180' : ''}`} />
+                      {active && (
+                        <motion.div
+                          layoutId="activeNavIndicator"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#edc14d] rounded-full"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </button>
+
+                    <AnimatePresence>
+                      {foodsMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 6 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute top-full left-0 pt-3 min-w-[160px]"
+                        >
+                          <div className="bg-[#F7F4EF] border border-black/8 rounded-xl shadow-xl py-2 overflow-hidden">
+                            {item.children.map((child) => (
+                              <button
+                                key={child.id}
+                                onClick={() => handleNavClick(child.id)}
+                                className={`w-full text-left px-4 py-2.5 font-sans text-xs tracking-wider font-semibold uppercase transition-colors cursor-pointer ${
+                                  currentView === child.id
+                                    ? 'text-[#edc14d] bg-black/5'
+                                    : 'text-[#556260] hover:text-[#1C1C1C] hover:bg-black/5'
+                                }`}
+                                id={`nav-${child.id}`}
+                              >
+                                {child.label}
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              }
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className={`font-sans text-xs tracking-widest font-semibold transition-all uppercase relative py-2 ${
+                    active ? 'text-[#edc14d]' : 'text-[#556260] hover:text-[#1C1C1C]'
+                  }`}
+                  id={`nav-${item.id}`}
+                >
+                  {item.label}
+                  {active && (
+                    <motion.div
+                      layoutId="activeNavIndicator"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#edc14d] rounded-full"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Right corner — Contact CTA */}
@@ -132,21 +206,73 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
 
             {/* Nav Items Link List */}
             <div className="flex flex-col gap-6">
-              {navItems.map((item, index) => (
-                <motion.button
-                  key={item.id}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`text-left font-serif text-3xl font-medium tracking-wide border-b border-black/8 pb-3 transition-colors ${
-                    currentView === item.id ? 'text-[#edc14d]' : 'text-[#556260] hover:text-[#1C1C1C]'
-                  }`}
-                  id={`mobile-nav-${item.id}`}
-                >
-                  {item.label}
-                </motion.button>
-              ))}
+              {navItems.map((item, index) => {
+                const active = isItemActive(item);
+
+                if ('children' in item) {
+                  return (
+                    <motion.div
+                      key={item.id}
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="border-b border-black/8 pb-3"
+                    >
+                      <button
+                        onClick={() => setMobileFoodsOpen(!mobileFoodsOpen)}
+                        className={`w-full flex items-center justify-between text-left font-serif text-3xl font-medium tracking-wide transition-colors cursor-pointer ${
+                          active ? 'text-[#edc14d]' : 'text-[#556260] hover:text-[#1C1C1C]'
+                        }`}
+                        id="mobile-nav-our-foods"
+                      >
+                        {item.label}
+                        <ChevronDown size={22} className={`transition-transform ${mobileFoodsOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence>
+                        {mobileFoodsOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="flex flex-col gap-4 pt-4 pl-2">
+                              {item.children.map((child) => (
+                                <button
+                                  key={child.id}
+                                  onClick={() => handleNavClick(child.id)}
+                                  className={`text-left font-sans text-lg font-semibold tracking-wide transition-colors cursor-pointer ${
+                                    currentView === child.id ? 'text-[#edc14d]' : 'text-[#8A9490] hover:text-[#1C1C1C]'
+                                  }`}
+                                  id={`mobile-nav-${child.id}`}
+                                >
+                                  {child.label}
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  );
+                }
+
+                return (
+                  <motion.button
+                    key={item.id}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => handleNavClick(item.id)}
+                    className={`text-left font-serif text-3xl font-medium tracking-wide border-b border-black/8 pb-3 transition-colors ${
+                      active ? 'text-[#edc14d]' : 'text-[#556260] hover:text-[#1C1C1C]'
+                    }`}
+                    id={`mobile-nav-${item.id}`}
+                  >
+                    {item.label}
+                  </motion.button>
+                );
+              })}
             </div>
 
             {/* Footer metadata in mobile menu */}
