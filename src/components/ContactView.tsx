@@ -65,9 +65,7 @@ export default function ContactView() {
             <div className="space-y-6">
               <h3 className="font-serif text-2xl text-[#1C1C1C] font-semibold">Store Hours</h3>
               <div className="font-sans text-xs md:text-sm text-[#556260] leading-relaxed font-light space-y-1">
-                <p>Monday to Friday</p>
-                <p>8:30 a.m. to 4:30 p.m.</p>
-                <p className="text-[#edc14d] font-medium pt-1">Support available 24/7</p>
+                <p>Pickup available by appointment.</p>
               </div>
             </div>
 
@@ -79,8 +77,8 @@ export default function ContactView() {
                   <MapPin size={16} />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#1C1C1C]">Chamber Offices</p>
-                  <p className="font-light text-[#8A9490]">986 botanical Ridge Road, Greenhouse C, Portland, OR</p>
+                  <p className="font-semibold text-[#1C1C1C]">Office Location</p>
+                  <p className="font-light text-[#8A9490]">3204 E Fifth Ave, Tampa, FL 33605</p>
                 </div>
               </div>
 
@@ -90,7 +88,7 @@ export default function ContactView() {
                 </div>
                 <div>
                   <p className="font-semibold text-[#1C1C1C]">Direct Email</p>
-                  <p className="font-light text-[#8A9490]">purity@plantsourcewholesale.example.com</p>
+                  <p className="font-light text-[#8A9490]">plantsourcewholesale@gmail.com</p>
                 </div>
               </div>
 
@@ -99,8 +97,9 @@ export default function ContactView() {
                   <Phone size={16} />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#1C1C1C]">Wholesale Inquiries</p>
-                  <p className="font-light text-[#8A9490]">+1 (503) 887-ORGANIC</p>
+                  <p className="font-semibold text-[#1C1C1C]">Inquiries</p>
+                  <p className="font-light text-[#8A9490]">813-464-0647</p>
+                  <p className="font-light text-[#8A9490]">813-464-0383</p>
                 </div>
               </div>
 
@@ -187,7 +186,6 @@ export default function ContactView() {
                       className="w-full bg-[#F0EDE8] border border-black/10 rounded-2xl py-3 px-4 text-xs focus:outline-none focus:border-[#edc14d] text-[#1C1C1C] cursor-pointer"
                     >
                       <option value="business">Business Partnership</option>
-                      <option value="individual">Individual Purchase</option>
                       <option value="general">General Inquiry</option>
                     </select>
                   </div>

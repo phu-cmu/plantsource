@@ -137,7 +137,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             {
               icon: <Truck size={22} className="text-[#edc14d]" />,
               title: 'Free Delivery',
-              subtitle: 'For local area',
+              subtitle: 'Pick Up available for local area',
             },
             {
               icon: <Package size={22} className="text-[#edc14d]" />,
@@ -179,17 +179,17 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
         </div>
       </section>
 
-      {/* 3. Curated Selections Bento Grid Section */}
+      {/* 3. Product Selections Bento Grid Section */}
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="mb-12 flex flex-col items-start" id="curated-selections-trigger">
           <h2 className="font-serif text-4xl md:text-5xl font-semibold text-[#1C1C1C] tracking-wide">
-            Curated Selections
+            Product Selections
           </h2>
           <div className="w-20 h-1 bg-[#edc14d] mt-4 rounded-full" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-auto md:h-[550px]">
-          {/* Main big category: Fresh Produce */}
+          {/* Main big category: Vegetarian */}
           <div
             onClick={() => handleCategoryNav('produce')}
             className="md:col-span-8 group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-black/8 cursor-pointer flex flex-col justify-end"
@@ -205,13 +205,13 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
 
             <div className="relative z-10 p-8 md:p-12">
               <span className="text-[#edc14d] font-sans text-xs tracking-widest uppercase mb-2 block font-bold">
-                Direct from Farms
+                FULL COLLECTIONS
               </span>
               <h3 className="font-serif text-3xl md:text-4xl font-semibold text-white">
-                Fresh Produce
+                Vegetarian
               </h3>
               <p className="text-[#556260] font-sans text-base max-w-sm mt-3 font-light leading-relaxed">
-                Organic heirloom greens harvested at dawn for mineral density.
+                Premium vege foods crafted for exceptional taste & quality
               </p>
             </div>
           </div>
@@ -233,15 +233,15 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               </div>
               <div className="relative z-10">
                 <span className="text-[#edc14d] font-sans text-[10px] tracking-widest uppercase font-bold block mb-1">
-                  PRESERVED VITALITY
+                  FULL COLLECTIONS
                 </span>
                 <h3 className="font-serif text-2xl font-semibold text-white">
-                  Pantry Staples
+                  Vegan
                 </h3>
               </div>
             </div>
 
-            {/* Category: Ready Meals */}
+            {/* Category: Snacks */}
             <div
               onClick={() => handleCategoryNav('meals')}
               className="group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-black/8 cursor-pointer flex flex-col justify-end p-8"
@@ -256,10 +256,10 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               </div>
               <div className="relative z-10">
                 <span className="text-[#edc14d] font-sans text-[10px] tracking-widest uppercase font-bold block mb-1">
-                  MICHELIN ARTISTRY
+                  QUICK BITES
                 </span>
                 <h3 className="font-serif text-2xl font-semibold text-white">
-                  Ready Meals
+                  Snacks
                 </h3>
               </div>
             </div>
@@ -524,7 +524,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               </span>
             </div>
             <p className="font-sans text-xs text-[#AAB0AE] font-light max-w-xs">
-              Purity in every bite — sustainably sourced, ethically harvested.
+              Carefully Selected. Naturally Delicious.
             </p>
           </div>
 
@@ -633,7 +633,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
           {/* Copyright */}
           <div className="mt-12 pt-8 border-t border-black/8 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] tracking-wider font-sans text-[#AAB0AE] font-semibold uppercase">
             <span>© 2024 Plantsource Wholesale CO. All Rights Reserved.</span>
-            <span>Purity In Every Bite.</span>
+            <span>Carefully Selected. Naturally Delicious.</span>
           </div>
         </div>
       </footer>
