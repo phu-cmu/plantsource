@@ -5,7 +5,7 @@ import { IMAGES, ARTICLES } from '../data';
 import { motion } from 'motion/react';
 
 interface HomeViewProps {
-  setView: (view: ViewType) => void;
+  setView: (view: ViewType, category?: 'all' | 'produce' | 'pantry' | 'meals') => void;
   setCategoryFilter: (category: 'all' | 'produce' | 'pantry' | 'meals') => void;
   setSelectedArticleId: (id: string | null) => void;
   setSelectedProductId: (id: string | null) => void;
@@ -44,8 +44,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
   }, []);
 
   const handleCategoryNav = (cat: 'produce' | 'pantry' | 'meals') => {
-    setCategoryFilter(cat);
-    setView('shop');
+    setView('shop', cat);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

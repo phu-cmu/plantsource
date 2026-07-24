@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Header from './components/Header';
 import HomeView from './components/HomeView';
@@ -36,15 +36,30 @@ const viewToPath: Record<ViewType, string> = {
   catalog: '/catalog',
 };
 
+type CategoryFilter = 'all' | 'produce' | 'pantry' | 'meals';
+const VALID_CATEGORIES: CategoryFilter[] = ['produce', 'pantry', 'meals'];
+
 export default function App() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const view: ViewType = pathToView[pathname] ?? 'home';
 
-  const setView = useCallback((newView: ViewType) => {
-    router.push(viewToPath[newView]);
+  const categoryParam = searchParams.get('category');
+  const categoryFilter: CategoryFilter = VALID_CATEGORIES.includes(categoryParam as CategoryFilter)
+    ? (categoryParam as CategoryFilter)
+    : 'all';
+
+  const setView = useCallback((newView: ViewType, category?: CategoryFilter) => {
+    const path = viewToPath[newView];
+    const url = category && category !== 'all' ? `${path}?category=${category}` : path;
+    router.push(url);
   }, [router]);
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'produce' | 'pantry' | 'meals'>('all');
+
+  const setCategoryFilter = useCallback((cat: CategoryFilter) => {
+    const url = cat === 'all' ? pathname : `${pathname}?category=${cat}`;
+    router.push(url);
+  }, [router, pathname]);
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
