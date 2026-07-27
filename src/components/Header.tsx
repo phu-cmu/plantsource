@@ -278,7 +278,6 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
             {/* Footer metadata in mobile menu */}
             <div className="mt-auto mb-12 border-t border-black/8 pt-6 text-[#8A9490] text-xs tracking-wider space-y-2 font-sans">
               <p>Plantsource Wholesale CO.</p>
-              <p className="text-[#AAB0AE]">Cultivating food honoring cellular health & pure culinary luxury.</p>
             </div>
           </motion.div>
         )}

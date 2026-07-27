@@ -105,12 +105,6 @@ export default function ContactView() {
 
             </div>
 
-            {/* Micro warning indicator */}
-            <div className="border-t border-black/8 pt-6 text-[10px] text-[#8A9490] uppercase tracking-wider space-y-1">
-              <p className="font-semibold text-[#556260]">Strict Ecological Code</p>
-              <p>We do not communicate with chemical-dependent distributors.</p>
-            </div>
-
           </div>
 
           {/* Right form submission element */}

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,7 @@ Route::prefix('auth')->group(function () {
 // Public routes
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
+Route::get('/settings', [SettingController::class, 'index']);
 
 Route::prefix('explore')->group(function () {
     Route::get('/stories', [StoryController::class, 'index']);

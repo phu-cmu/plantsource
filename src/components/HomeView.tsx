@@ -13,11 +13,31 @@ interface HomeViewProps {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
 
+const DEFAULT_SETTINGS = {
+  home_trust_delivery_title: 'Free Delivery',
+  home_trust_delivery_subtitle: 'Pick Up available for local area',
+  social_facebook_url: '#',
+  social_tiktok_url: '#',
+  social_youtube_url: '#',
+  social_instagram_url: '#',
+};
+
 export default function HomeView({ setView, setCategoryFilter, setSelectedArticleId, setSelectedProductId }: HomeViewProps) {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/settings`)
+      .then(res => res.json())
+      .then(json => {
+        if (!json.data) return;
+        setSettings(prev => ({ ...prev, ...json.data }));
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch(`${API_BASE}/products`)
@@ -135,8 +155,8 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
           {[
             {
               icon: <Truck size={22} className="text-[#edc14d]" />,
-              title: 'Free Delivery',
-              subtitle: 'Pick Up available for local area',
+              title: settings.home_trust_delivery_title,
+              subtitle: settings.home_trust_delivery_subtitle,
             },
             {
               icon: <Package size={22} className="text-[#edc14d]" />,
@@ -539,6 +559,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                 {[
                   {
                     label: 'Instagram',
+                    href: settings.social_instagram_url,
                     icon: (
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
@@ -547,6 +568,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                   },
                   {
                     label: 'TikTok',
+                    href: settings.social_tiktok_url,
                     icon: (
                       <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.28 6.28 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
@@ -555,6 +577,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                   },
                   {
                     label: 'YouTube',
+                    href: settings.social_youtube_url,
                     icon: (
                       <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                         <path d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.6 2.8 12 2.8 12 2.8s-4.6 0-6.8.1C4.6 3 3.3 3 2.2 4.2 1.3 5 1 7 1 7S.7 9.3.7 11.5v2.1c0 2.2.3 4.5.3 4.5s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.6 22.2 12 22.2 12 22.2s4.6 0 6.8-.2c.6-.1 1.9-.1 3-1.2.9-.8 1.2-2.8 1.2-2.8s.3-2.3.3-4.5v-2.1C23.3 9.3 23 7 23 7zM9.7 15.5V8.4l8.1 3.6-8.1 3.5z"/>
@@ -563,6 +586,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                   },
                   {
                     label: 'Facebook',
+                    href: settings.social_facebook_url,
                     icon: (
                       <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                         <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.514c-1.491 0-1.956.93-1.956 1.886v2.266h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
@@ -572,7 +596,9 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                 ].map((social) => (
                   <a
                     key={social.label}
-                    href="#"
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-3 text-[#8A9490] hover:text-[#edc14d] transition-colors group"
                   >
                     <span className="w-8 h-8 rounded-full border border-black/10 group-hover:border-[#edc14d]/40 flex items-center justify-center transition-colors">
