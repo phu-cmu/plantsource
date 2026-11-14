@@ -1,100 +1,43 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRight, Leaf, ShieldAlert, Heart, Sprout, ShieldCheck, AlertCircle, Star, Trophy, Truck, Package, Award, Headphones, ChevronLeft, ChevronRight } from 'lucide-react';
-import { ViewType, Product, Article } from '../types';
-import { IMAGES, ARTICLES } from '../data';
+import React, { useRef, useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowRight, Leaf, Sprout, ShieldCheck, Star, Truck, Package, Award, Headphones, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Product, Article } from '../types';
+import { IMAGES } from '../data';
+import { SiteSettings, API_BASE } from '../lib/api';
+import { productPath, articlePath, shopCategoryPath } from '../lib/routes';
 import { motion } from 'motion/react';
 
 interface HomeViewProps {
-  setView: (view: ViewType, category?: 'all' | 'produce' | 'pantry' | 'meals') => void;
-  setCategoryFilter: (category: 'all' | 'produce' | 'pantry' | 'meals') => void;
-  setSelectedArticleId: (id: string | null) => void;
-  setSelectedProductId: (id: string | null) => void;
+  products: Product[];
+  stories: Article[];
+  settings: SiteSettings;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+}
 
-const DEFAULT_SETTINGS = {
-  home_trust_delivery_title: 'Free Delivery',
-  home_trust_delivery_subtitle: 'Pick Up available for local area',
-  social_facebook_url: '#',
-  social_tiktok_url: '#',
-  social_youtube_url: '#',
-  social_instagram_url: '#',
-};
-
-export default function HomeView({ setView, setCategoryFilter, setSelectedArticleId, setSelectedProductId }: HomeViewProps) {
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+export default function HomeView({ products, stories, settings: initialSettings }: HomeViewProps) {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [settings, setSettings] = useState<SiteSettings>(initialSettings);
 
+  // The server-rendered page is cached for a few minutes. Re-read settings in the browser so
+  // changes saved in the admin (e.g. the delivery text) show up immediately, as before.
   useEffect(() => {
     fetch(`${API_BASE}/settings`)
       .then(res => res.json())
       .then(json => {
-        if (!json.data) return;
-        setSettings(prev => ({ ...prev, ...json.data }));
+        if (json?.data) setSettings(prev => ({ ...prev, ...json.data }));
       })
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    fetch(`${API_BASE}/products`)
-      .then(res => res.json())
-      .then(json => {
-        if (!Array.isArray(json.data)) return;
-        const normalized: Product[] = json.data.map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          category: p.category as Product['category'],
-          categoryLabel: p.category_label,
-          brand: p.brand ?? undefined,
-          image: p.image,
-          images: p.images ?? [],
-          description: p.description,
-          details: p.details,
-          benefits: p.benefits ?? [],
-          unit: p.unit,
-          isFeatured: p.is_featured ?? false,
-        }));
-        setFeaturedProducts(normalized.filter(p => p.isFeatured));
-      })
-      .catch(() => {});
-  }, []);
+  // Products and settings come from the server render, so they are in the initial HTML.
+  const featuredProducts = products.filter(p => p.isFeatured);
 
-  const handleCategoryNav = (cat: 'produce' | 'pantry' | 'meals') => {
-    setView('shop', cat);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleArticleClick = (articleId: string) => {
-    setSelectedArticleId(articleId);
-    setView('journal');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newsletterEmail || !newsletterEmail.includes('@')) {
-      setNewsletterStatus('error');
-      setTimeout(() => setNewsletterStatus('idle'), 3000);
-      return;
-    }
-    setNewsletterStatus('success');
-    setNewsletterEmail('');
-    setTimeout(() => setNewsletterStatus('idle'), 5000);
-  };
-
-  const handleViewProduct = (productId: string) => {
-    setSelectedProductId(productId);
-    setView('shop');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Get the two specific articles from the screenshot to display:
-  // "The Art of Seasonal Stewing" (art_2) and "Protein Purity: A Guide" (art_3)
-  const homeArticles = ARTICLES.filter(art => art.id === 'art_2' || art.id === 'art_3');
+  // Latest two stories for the blog preview.
+  const homeArticles = stories.filter(s => s.slug).slice(0, 2);
 
   return (
     <div id="home-view" className="bg-[#F7F4EF] text-[#1C1C1C] scroll-smooth">
@@ -102,10 +45,13 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
       {/* 1. Hero Section - Extreme high-end overhead view */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
-          <img
-            className="w-full h-full object-cover brightness-[0.35]"
+          <Image
+            className="object-cover brightness-[0.35]"
             src={IMAGES.heroMain}
-            alt="Vibrant fresh vegan buddha bowl premium backgrounds"
+            alt="Fresh vegan bowl"
+            fill
+            priority
+            sizes="100vw"
           />
           {/* Elegant soft gradient overlay transitioning to primary green */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#013120] via-black/30 to-[#F7F4EF]/40" />
@@ -125,13 +71,13 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               Premium vegan and vegetarian products that bring authentic flavor, quality, and convenience to every meal.
             </p>
             <div className="pt-6">
-              <button
-                onClick={() => handleNavCategoryAll()}
-                className="bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-10 py-5 rounded-full font-sans text-sm font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#FDD05A]/10 cursor-pointer"
+              <Link
+                href="/shop"
+                className="inline-block bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-10 py-5 rounded-full font-sans text-sm font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#FDD05A]/10 cursor-pointer"
                 id="hero-shop-button"
               >
                 SHOP NOW
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -209,15 +155,17 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-auto md:h-[550px]">
           {/* Main big category: Vegetarian */}
-          <div
-            onClick={() => handleCategoryNav('produce')}
+          <Link
+            href={shopCategoryPath('produce')}
             className="md:col-span-8 group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-black/8 cursor-pointer flex flex-col justify-end"
           >
             <div className="absolute inset-0 z-0">
-              <img
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-65"
+              <Image
+                className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-65"
                 src={IMAGES.freshProduce}
-                alt="Direct organic farm fresh greens"
+                alt="Vegetarian food collection"
+                fill
+                sizes="(max-width: 768px) 100vw, 66vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             </div>
@@ -233,20 +181,22 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                 Premium vege foods crafted for exceptional taste & quality
               </p>
             </div>
-          </div>
+          </Link>
 
           {/* Secondary Categories column */}
           <div className="md:col-span-4 grid grid-rows-2 gap-8">
             {/* Category: Pantry */}
-            <div
-              onClick={() => handleCategoryNav('pantry')}
+            <Link
+              href={shopCategoryPath('pantry')}
               className="group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-black/8 cursor-pointer flex flex-col justify-end p-8"
             >
               <div className="absolute inset-0 z-0">
-                <img
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-50"
+                <Image
+                  className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-50"
                   src={IMAGES.pantryJars}
-                  alt="Organic artisan staples and ancient grains"
+                  alt="Vegan food collection"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
               </div>
@@ -258,18 +208,20 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                   Vegan
                 </h3>
               </div>
-            </div>
+            </Link>
 
             {/* Category: Snacks */}
-            <div
-              onClick={() => handleCategoryNav('meals')}
+            <Link
+              href={shopCategoryPath('meals')}
               className="group relative overflow-hidden rounded-3xl bg-[#1A4233] border border-black/8 cursor-pointer flex flex-col justify-end p-8"
             >
               <div className="absolute inset-0 z-0">
-                <img
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-50"
+                <Image
+                  className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-50"
                   src={IMAGES.readyMeals}
-                  alt="Gourmet ready to heat vegan meals"
+                  alt="Plant-based snacks collection"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
               </div>
@@ -281,7 +233,7 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                   Snacks
                 </h3>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -316,13 +268,13 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             >
               <ChevronRight size={18} />
             </button>
-            <button
-              onClick={() => { setCategoryFilter('all'); setView('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            <Link
+              href="/shop"
               className="text-[#edc14d] font-sans text-xs font-bold tracking-widest flex items-center gap-2 group hover:gap-3 transition-all cursor-pointer uppercase pb-1 border-b border-[#edc14d]/10 hover:border-[#edc14d]/60 ml-2"
             >
               VIEW ALL
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -339,10 +291,12 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             >
               {/* Image */}
               <div className="relative aspect-square overflow-hidden bg-black/30">
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  fill
+                  sizes="240px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 
@@ -369,12 +323,12 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                 <h3 className="font-serif text-sm font-medium text-[#1C1C1C] leading-snug line-clamp-2 group-hover:text-[#edc14d] transition-colors flex-1">
                   {product.name}
                 </h3>
-                <button
-                  onClick={() => handleViewProduct(product.id)}
-                  className="w-full mt-1 py-2 rounded-full border border-[#edc14d]/40 hover:border-[#edc14d] hover:bg-[#edc14d]/10 text-[#edc14d] font-sans text-[10px] font-bold tracking-widest uppercase transition-all cursor-pointer"
+                <Link
+                  href={productPath(product.slug ?? product.id)}
+                  className="block text-center w-full mt-1 py-2 rounded-full border border-[#edc14d]/40 hover:border-[#edc14d] hover:bg-[#edc14d]/10 text-[#edc14d] font-sans text-[10px] font-bold tracking-widest uppercase transition-all cursor-pointer"
                 >
                   View Product
-                </button>
+                </Link>
               </div>
             </div>
           ))}
@@ -442,13 +396,13 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             </p>
           </div>
 
-          <button
-            onClick={() => handleViewAllArticles()}
+          <Link
+            href="/journal"
             className="text-[#edc14d] font-sans text-xs font-bold tracking-widest flex items-center gap-2 group hover:gap-3 transition-all cursor-pointer uppercase pb-1 border-b border-[#edc14d]/10 hover:border-[#edc14d]/60"
           >
             EXPLORE MORE
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          </Link>
         </div>
 
         {/* 2-Column Horizontal Cards exactly matching Image 1 */}
@@ -459,11 +413,15 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               className="group bg-[#013120]/6 hover:bg-[#013120]/10 border border-black/8 overflow-hidden rounded-3xl flex flex-col md:flex-row transition-all duration-300"
             >
               <div className="md:w-1/2 overflow-hidden relative min-h-[220px] md:min-h-auto flex items-stretch">
-                <img
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 absolute inset-0"
-                  src={article.image}
-                  alt={article.title}
-                />
+                {article.image && (
+                  <Image
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    src={article.image}
+                    alt={article.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 25vw"
+                  />
+                )}
               </div>
 
               <div className="p-8 md:w-1/2 flex flex-col justify-center space-y-4">
@@ -481,15 +439,15 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
                 </h3>
 
                 <p className="font-sans text-xs text-[#556260] line-clamp-2 leading-relaxed font-light">
-                  {article.excerpt}
+                  {article.isHtmlContent ? stripHtml(article.excerpt) : article.excerpt}
                 </p>
 
-                <button
-                  onClick={() => handleArticleClick(article.id)}
-                  className="w-fit text-[#edc14d] font-sans text-xs tracking-wider uppercase border-b border-transparent hover:border-[#edc14d]/60 pb-0.5 pt-2 transition-all font-semibold cursor-pointer align-left text-left"
+                <Link
+                  href={articlePath(article.slug ?? article.id)}
+                  className="block w-fit text-[#edc14d] font-sans text-xs tracking-wider uppercase border-b border-transparent hover:border-[#edc14d]/60 pb-0.5 pt-2 transition-all font-semibold cursor-pointer align-left text-left"
                 >
                   READ MORE
-                </button>
+                </Link>
               </div>
             </article>
           ))}
@@ -511,18 +469,18 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <button
-                onClick={() => handleNavCategoryAll()}
+              <Link
+                href="/shop"
                 className="bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-8 py-5 rounded-full font-sans text-xs font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#FDD05A]/10 cursor-pointer"
               >
                 Explore Products
-              </button>
-              <button
-                onClick={() => handleViewAllRecipes()}
+              </Link>
+              <Link
+                href="/journal"
                 className="border border-[#edc14d]/30 hover:border-[#edc14d] text-[#1C1C1C] hover:bg-black/5 px-8 py-5 rounded-full font-sans text-xs font-bold tracking-widest uppercase transition-all cursor-pointer"
               >
                 Browse Recipes
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -617,14 +575,14 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               </h4>
               <ul className="space-y-3 font-sans text-sm text-[#8A9490] font-light">
                 <li>
-                  <button onClick={() => { setView('shipping-policy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
+                  <Link href="/shipping-policy" className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
                     Shipping Policy
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button onClick={() => { setView('shipping-policy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
+                  <Link href="/shipping-policy" className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
                     Refund Policy
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -636,19 +594,19 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
               </h4>
               <ul className="space-y-3 font-sans text-sm text-[#8A9490] font-light">
                 <li>
-                  <button onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
+                  <Link href="/" className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
                     Home
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button onClick={() => { setCategoryFilter('all'); setView('shop'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
+                  <Link href="/shop" className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
                     Product
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button onClick={() => { setView('contact'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
+                  <Link href="/contact" className="hover:text-[#1C1C1C] transition-colors cursor-pointer text-left">
                     Contact Us
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -664,29 +622,4 @@ export default function HomeView({ setView, setCategoryFilter, setSelectedArticl
       </footer>
     </div>
   );
-
-  function handleNavCategoryAll() {
-    setCategoryFilter('all');
-    setView('shop');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function handleViewAllRecipes() {
-    // sets category filter to recipes in journal and routes to journal
-    setCategoryFilter('all');
-    setSelectedArticleId(null);
-    setView('journal');
-    // scroll down slightly
-    setTimeout(() => {
-      const el = document.getElementById('journal-filter-trigger');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-  }
-
-  function handleViewAllArticles() {
-    setCategoryFilter('all');
-    setSelectedArticleId(null);
-    setView('journal');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
 }

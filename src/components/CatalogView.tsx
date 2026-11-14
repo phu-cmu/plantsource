@@ -97,19 +97,8 @@ export default function CatalogView() {
   const height = Math.round(width / aspectRatio);
 
   return (
-    <div className="min-h-screen bg-[#F7F4EF] text-[#1C1C1C] pt-28 pb-24">
-      <div className="max-w-6xl mx-auto px-6 md:px-12 space-y-10">
-
-        <section className="text-center space-y-4">
-          <h1 className="font-serif text-[#edc14d] text-xs font-bold tracking-widest uppercase">
-            Plantsource Wholesale
-          </h1>
-          <h2 className="font-serif text-4xl md:text-5xl text-[#1C1C1C] font-bold leading-tight">
-            Product Catalog
-          </h2>
-          <div className="w-16 h-1 bg-[#edc14d] rounded-full mx-auto" />
-        </section>
-
+    // Page wrapper and heading live in App.tsx so they render on the server.
+    <div className="space-y-10">
         {error && (
           <p className="text-center text-red-600 font-sans text-sm">{error}</p>
         )}
@@ -164,7 +153,6 @@ export default function CatalogView() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

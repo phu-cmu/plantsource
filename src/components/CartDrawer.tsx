@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { ShoppingBag, X, Plus, Minus, Trash2, Tag, Gift, CheckCircle, ArrowRight, Sparkles } from 'lucide-react';
 import { CartItem } from '../types';
@@ -118,7 +119,7 @@ export default function CartDrawer({
                       >
                         {/* Thumbnail image */}
                         <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/20 flex-shrink-0">
-                          <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                          <Image src={item.product.image} alt={item.product.name} width={96} height={96} sizes="96px" className="w-full h-full object-cover" />
                         </div>
 
                         {/* Title descriptions */}

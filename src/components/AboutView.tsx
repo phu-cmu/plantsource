@@ -1,14 +1,11 @@
 import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { Trash2, Heart, ShieldCheck, MapPin, Truck, Leaf, Snowflake } from 'lucide-react';
-import { ViewType } from '../types';
 import { IMAGES } from '../data';
 import { motion } from 'motion/react';
 
-interface AboutViewProps {
-  setView: (view: ViewType) => void;
-}
-
-export default function AboutView({ setView }: AboutViewProps) {
+export default function AboutView() {
   return (
     <div className="min-h-screen bg-[#F7F4EF] text-[#1C1C1C] pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-24">
@@ -18,12 +15,12 @@ export default function AboutView({ setView }: AboutViewProps) {
 
           {/* Left Block Text */}
           <div className="lg:col-span-7 space-y-6">
-            <h1 className="font-serif text-[#edc14d] text-xs font-bold tracking-widest uppercase">
+            <p className="font-serif text-[#edc14d] text-xs font-bold tracking-widest uppercase">
               THE PLANTSOURCE WHOLESALE PHILOSOPHY
-            </h1>
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#1C1C1C] font-bold leading-tight">
+            </p>
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#1C1C1C] font-bold leading-tight">
               Your Trusted Plant-Based Food Partner
-            </h2>
+            </h1>
             <div className="w-16 h-1 bg-[#edc14d] rounded-full" />
 
             <p className="font-sans text-base md:text-lg text-[#556260] font-light leading-relaxed">
@@ -34,27 +31,30 @@ export default function AboutView({ setView }: AboutViewProps) {
             </p>
 
             <div className="pt-4 flex flex-wrap gap-4">
-              <button
-                onClick={() => { setView('shop'); window.scrollTo({ top: 0, behavior: 'instant' }); }}
+              <Link
+                href="/shop"
                 className="bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-8 py-4 rounded-full font-sans text-xs font-bold tracking-widest uppercase hover:scale-105 active:scale-95 transition-all shadow-lg cursor-pointer"
               >
                 Browse Products
-              </button>
-              <button
-                onClick={() => { setView('contact'); window.scrollTo({ top: 0, behavior: 'instant' }); }}
+              </Link>
+              <Link
+                href="/contact"
                 className="border border-[#edc14d]/30 text-[#1C1C1C] hover:bg-black/5 px-8 py-4 rounded-full font-sans text-xs font-bold tracking-widest uppercase transition-all cursor-pointer"
               >
                 Wholesale Inquiry
-              </button>
+              </Link>
             </div>
           </div>
 
           {/* Right Column Image Framer */}
           <div className="lg:col-span-5 relative group overflow-hidden rounded-3xl border border-black/8 shadow-2xl h-[420px] lg:h-[500px]">
-            <img
+            <Image
               src={IMAGES.earthFirst}
-              alt="Sophisticated minimalist raw farm vegetables top down"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-102 opacity-85"
+              alt="Plantsource plant-based products"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-102 opacity-85"
             />
             <div className="absolute inset-0 bg-[#013120]/10 group-hover:bg-transparent transition-colors duration-500" />
           </div>
@@ -133,7 +133,7 @@ export default function AboutView({ setView }: AboutViewProps) {
               transition={{ duration: 0.6 }}
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-52 h-52 rounded-full overflow-hidden border-4 border-[#edc14d]/30 shadow-2xl shadow-[#edc14d]/10"
             >
-              <img src="/plant/hotdog.png" alt="Plant-based hotdog" className="w-full h-full object-cover" />
+              <Image src="/plant/hotdog.webp" alt="Plant-based hotdog" fill sizes="208px" className="object-cover" />
             </motion.div>
 
             {/* Top-left — Shiitake Mushroom */}
@@ -365,10 +365,13 @@ export default function AboutView({ setView }: AboutViewProps) {
             </h3>
           </div>
           <div className="bg-black/5 border border-black/10 rounded-2xl p-8 flex items-center justify-center">
-            <img
+            <Image
               src="/plant/certificate.webp"
               alt="International certifications"
-              className="w-full max-w-2xl object-contain"
+              width={1200}
+              height={178}
+              sizes="(max-width: 768px) 100vw, 672px"
+              className="w-full max-w-2xl h-auto object-contain"
             />
           </div>
         </section>

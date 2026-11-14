@@ -1,63 +1,55 @@
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Search, ShoppingBasket, Eye, X, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 import { PRODUCTS } from '../data';
+import { API_BASE, normalizeProduct } from '../lib/api';
+import { CategoryFilter, productPath, shopCategoryPath } from '../lib/routes';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ShopViewProps {
-  categoryFilter: 'all' | 'produce' | 'pantry' | 'meals';
-  setCategoryFilter: (cat: 'all' | 'produce' | 'pantry' | 'meals') => void;
+  initialProducts: Product[];
+  categoryFilter: CategoryFilter;
+  setCategoryFilter: (cat: CategoryFilter) => void;
   onAddToCart: (product: Product, quantity: number) => void;
-  selectedProductId?: string | null;
-  onClearSelectedProductId?: () => void;
+  /** Slug from /shop/[slug]; when set, the product detail is shown. */
+  selectedProductSlug: string | null;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
-
-export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCart, selectedProductId, onClearSelectedProductId }: ShopViewProps) {
+export default function ShopView({ initialProducts, categoryFilter, setCategoryFilter, onAddToCart, selectedProductSlug }: ShopViewProps) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'default' | 'nameAsc' | 'nameDesc'>('default');
   const [brandFilter, setBrandFilter] = useState('all');
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
-  const [apiProducts, setApiProducts] = useState<Product[]>([]);
+  // Products are rendered on the server; only refetch in the browser if the server had none.
+  const [apiProducts, setApiProducts] = useState<Product[]>(initialProducts);
 
   useEffect(() => {
+    if (initialProducts.length > 0) return;
     fetch(`${API_BASE}/products`)
       .then(res => res.json())
       .then(json => {
         if (!Array.isArray(json.data)) return;
-        const normalized: Product[] = json.data.map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          category: p.category as Product['category'],
-          categoryLabel: p.category_label,
-          brand: p.brand ?? undefined,
-          image: p.image,
-          images: p.images ?? [],
-          description: p.description,
-          details: p.details,
-          benefits: p.benefits ?? [],
-          unit: p.unit,
-        }));
-        setApiProducts(normalized);
+        setApiProducts(json.data.map(normalizeProduct));
       })
       .catch(() => {});
-  }, []);
+  }, [initialProducts.length]);
 
-  useEffect(() => {
-    if (selectedProductId) {
-      const allProducts = [...PRODUCTS, ...apiProducts];
-      const product = allProducts.find(p => p.id === selectedProductId) ?? null;
-      setSelectedProduct(product);
-      onClearSelectedProductId?.();
-    }
-  }, [selectedProductId, apiProducts]);
+  const selectedProduct: Product | null = selectedProductSlug
+    ? [...PRODUCTS, ...apiProducts].find(p => p.slug === selectedProductSlug) ?? null
+    : null;
+
+  const closeProduct = () => {
+    router.push(shopCategoryPath(categoryFilter), { scroll: false });
+  };
 
   useEffect(() => {
     setActiveImageIndex(0);
-  }, [selectedProduct]);
+  }, [selectedProductSlug]);
 
   const productGallery = selectedProduct
     ? Array.from(new Set([selectedProduct.image, ...(selectedProduct.images ?? [])].filter(Boolean)))
@@ -106,9 +98,12 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
           <p className="text-[#edc14d] font-sans text-xs font-bold tracking-widest uppercase">
             PLANTSOURCE WHOLESALE BOUTIQUE
           </p>
-          <h1 className="font-serif text-4xl md:text-5xl text-[#1C1C1C] font-bold leading-tight">
-            OUR VEGE & VEGAN FOOD
-          </h1>
+          {/* On a product URL the product name is the page's H1, so this becomes an H2. */}
+          {React.createElement(
+            selectedProduct ? 'h2' : 'h1',
+            { className: 'font-serif text-4xl md:text-5xl text-[#1C1C1C] font-bold leading-tight' },
+            'OUR VEGE & VEGAN FOOD',
+          )}
         </div>
 
         {/* Filter and Search controls */}
@@ -190,28 +185,30 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
         {sortedProducts.length === 0 ? (
           <div className="text-center py-20 bg-[#013120]/5 rounded-3xl border border-black/8 space-y-4">
             <ShoppingBasket size={48} className="text-[#AAB0AE] mx-auto" />
-            <h3 className="font-serif text-xl font-medium text-[#1C1C1C]">Reserves not found</h3>
+            <h3 className="font-serif text-xl font-medium text-[#1C1C1C]">No products found</h3>
             <p className="text-sm text-[#8A9490] font-light max-w-sm mx-auto">
-              We couldn't locate any reserves matching your criteria. Try adjusting your query or filters.
+              We couldn't find any products matching your search. Try adjusting your query or filters.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <AnimatePresence mode="popLayout">
-              {sortedProducts.map((product) => (
+            <AnimatePresence mode="popLayout" initial={false}>
+              {sortedProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
                   layoutId={`prod-card-${product.id}`}
-                  onClick={() => setSelectedProduct(product)}
                   className="group bg-[#013120]/6 border border-black/8 rounded-3xl overflow-hidden cursor-pointer flex flex-col justify-between transition-all duration-300 hover:scale-[1.01] hover:border-black/12"
                 >
-                  <div className="space-y-4">
+                  <Link href={productPath(product.slug ?? product.id)} scroll={false} className="block space-y-4">
                     {/* Visual box */}
                     <div className="aspect-[4/3] overflow-hidden relative bg-black/40">
-                      <img
+                      <Image
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                        priority={index < 3}
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
 
                       {/* Hover action banner overlay */}
@@ -243,7 +240,7 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
                         {product.description}
                       </p>
                     </div>
-                  </div>
+                  </Link>
 
                 </motion.div>
               ))}
@@ -252,9 +249,12 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
         )}
 
         {/* Product Detail Modal */}
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {selectedProduct && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+              onClick={(e) => { if (e.target === e.currentTarget) closeProduct(); }}
+            >
               <motion.div
                 initial={{ scale: 0.93, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -264,7 +264,8 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
               >
                 {/* Close absolute */}
                 <button
-                  onClick={() => setSelectedProduct(null)}
+                  onClick={closeProduct}
+                  aria-label="Close product details"
                   className="absolute top-4 right-4 z-20 bg-black/10 text-[#1C1C1C] hover:text-[#013120] p-2 border border-black/10 rounded-full hover:scale-105 active:scale-95 transition-transform cursor-pointer"
                 >
                   <X size={18} />
@@ -273,10 +274,13 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
                 {/* Left image segment */}
                 <div className="md:w-1/2 relative bg-black/40 flex flex-col">
                   <div className="relative flex-1 min-h-[280px]">
-                    <img
+                    <Image
                       src={productGallery[activeImageIndex] ?? selectedProduct.image}
                       alt={selectedProduct.name}
-                      className="absolute inset-0 w-full h-full object-contain"
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      className="object-contain"
                     />
 
                     {productGallery.length > 1 && (
@@ -309,7 +313,7 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
                             idx === activeImageIndex ? 'border-[#edc14d]' : 'border-transparent opacity-70 hover:opacity-100'
                           }`}
                         >
-                          <img src={src} alt={`${selectedProduct.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                          <Image src={src} alt={`${selectedProduct.name} ${idx + 1}`} width={56} height={56} className="w-full h-full object-cover" />
                         </button>
                       ))}
                     </div>
@@ -334,13 +338,19 @@ export default function ShopView({ categoryFilter, setCategoryFilter, onAddToCar
                       </span>
                     )}
 
-                    <h2 className="font-serif text-2xl md:text-3xl font-bold text-[#1C1C1C] leading-tight">
+                    <h1 className="font-serif text-2xl md:text-3xl font-bold text-[#1C1C1C] leading-tight">
                       {selectedProduct.name}
-                    </h2>
+                    </h1>
 
-                    <p className="font-sans text-xs md:text-sm text-[#556260] leading-relaxed font-light">
+                    <p className="font-sans text-xs md:text-sm text-[#556260] leading-relaxed font-light whitespace-pre-line">
                       {selectedProduct.details}
                     </p>
+
+                    {selectedProduct.description && (
+                      <p className="font-sans text-xs text-[#556260] leading-relaxed font-light whitespace-pre-line">
+                        {selectedProduct.description}
+                      </p>
+                    )}
 
                     {/* Bio-nutrients / Benefits bullets list */}
                     <div className="space-y-2 pt-2">

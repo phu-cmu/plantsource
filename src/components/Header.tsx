@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, ShoppingBag, X, Info, ShoppingCart, ChevronDown } from 'lucide-react';
 import { ViewType } from '../types';
+import { VIEW_PATHS } from '../lib/routes';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface HeaderProps {
   currentView: ViewType;
-  setView: (view: ViewType) => void;
   cartCount: number;
   onCartClick: () => void;
 }
 
-export default function Header({ currentView, setView, cartCount, onCartClick }: HeaderProps) {
+export default function Header({ currentView, cartCount, onCartClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [foodsMenuOpen, setFoodsMenuOpen] = useState(false);
   const [mobileFoodsOpen, setMobileFoodsOpen] = useState(false);
@@ -34,10 +36,10 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
       ? item.children.some((child) => child.id === currentView)
       : currentView === item.id;
 
-  const handleNavClick = (viewId: ViewType) => {
-    setView(viewId);
+  // Navigation uses real <Link href> anchors so search engines can crawl every page.
+  const handleNavClick = () => {
     setMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setFoodsMenuOpen(false);
   };
 
   return (
@@ -56,20 +58,24 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
               <Menu size={24} />
             </button>
 
-            <button
-              onClick={() => handleNavClick('home')}
+            <Link
+              href="/"
+              onClick={handleNavClick}
               className="flex items-center gap-2 text-left group"
               id="brand-logo"
             >
-              <img
+              <Image
                 src="/plant/logo-icon.png"
                 alt="Plantsource Wholesale"
-                className="h-9 w-auto object-contain group-hover:scale-105 transition-transform"
+                width={36}
+                height={36}
+                priority
+                className="h-9 w-9 object-contain group-hover:scale-105 transition-transform"
               />
               <span className="font-serif text-lg tracking-wider font-semibold text-[#1C1C1C] group-hover:text-[#edc14d] transition-colors uppercase">
                 Plantsource Wholesale
               </span>
-            </button>
+            </Link>
           </div>
 
           {/* Center navigation links on Desktop */}
@@ -85,8 +91,9 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
                     onMouseEnter={() => setFoodsMenuOpen(true)}
                     onMouseLeave={() => setFoodsMenuOpen(false)}
                   >
-                    <button
-                      onClick={() => handleNavClick(item.id)}
+                    <Link
+                      href={VIEW_PATHS[item.id]}
+                      onClick={handleNavClick}
                       className={`flex items-center gap-1 font-sans text-xs tracking-widest font-semibold transition-all uppercase relative py-2 cursor-pointer ${
                         active ? 'text-[#edc14d]' : 'text-[#556260] hover:text-[#1C1C1C]'
                       }`}
@@ -101,7 +108,7 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
                           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                         />
                       )}
-                    </button>
+                    </Link>
 
                     <AnimatePresence>
                       {foodsMenuOpen && (
@@ -114,10 +121,11 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
                         >
                           <div className="bg-[#F7F4EF] border border-black/8 rounded-xl shadow-xl py-2 overflow-hidden">
                             {item.children.map((child) => (
-                              <button
+                              <Link
                                 key={child.id}
-                                onClick={() => handleNavClick(child.id)}
-                                className={`w-full text-left px-4 py-2.5 font-sans text-xs tracking-wider font-semibold uppercase transition-colors cursor-pointer ${
+                                href={VIEW_PATHS[child.id]}
+                                onClick={handleNavClick}
+                                className={`block w-full text-left px-4 py-2.5 font-sans text-xs tracking-wider font-semibold uppercase transition-colors cursor-pointer ${
                                   currentView === child.id
                                     ? 'text-[#edc14d] bg-black/5'
                                     : 'text-[#556260] hover:text-[#1C1C1C] hover:bg-black/5'
@@ -125,7 +133,7 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
                                 id={`nav-${child.id}`}
                               >
                                 {child.label}
-                              </button>
+                              </Link>
                             ))}
                           </div>
                         </motion.div>
@@ -136,9 +144,10 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
               }
 
               return (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => handleNavClick(item.id)}
+                  href={VIEW_PATHS[item.id]}
+                  onClick={handleNavClick}
                   className={`font-sans text-xs tracking-widest font-semibold transition-all uppercase relative py-2 ${
                     active ? 'text-[#edc14d]' : 'text-[#556260] hover:text-[#1C1C1C]'
                   }`}
@@ -152,15 +161,16 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}
-                </button>
+                </Link>
               );
             })}
           </div>
 
           {/* Right corner — Contact CTA */}
           <div className="flex items-center">
-            <button
-              onClick={() => handleNavClick('contact')}
+            <Link
+              href={VIEW_PATHS.contact}
+              onClick={handleNavClick}
               className={`px-5 py-2 rounded-full font-sans text-xs font-black tracking-widest uppercase border-2 transition-all active:scale-95 cursor-pointer ${
                 currentView === 'contact'
                   ? 'bg-[#edc14d] text-[#362800] border-[#edc14d]'
@@ -168,7 +178,7 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
               }`}
             >
               CONTACT
-            </button>
+            </Link>
           </div>
         </nav>
       </header>
@@ -194,10 +204,12 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
 
             {/* Menu Header Brand */}
             <div className="flex items-center gap-3 mb-12 border-b border-black/8 pb-6">
-              <img
+              <Image
                 src="/plant/logo-icon.png"
                 alt="Plantsource Wholesale"
-                className="h-12 w-auto object-contain"
+                width={48}
+                height={48}
+                className="h-12 w-12 object-contain"
               />
               <span className="font-serif text-2xl tracking-widest text-[#1C1C1C] font-semibold uppercase">
                 Plantsource Wholesale
@@ -238,16 +250,17 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
                           >
                             <div className="flex flex-col gap-4 pt-4 pl-2">
                               {item.children.map((child) => (
-                                <button
+                                <Link
                                   key={child.id}
-                                  onClick={() => handleNavClick(child.id)}
+                                  href={VIEW_PATHS[child.id]}
+                                  onClick={handleNavClick}
                                   className={`text-left font-sans text-lg font-semibold tracking-wide transition-colors cursor-pointer ${
                                     currentView === child.id ? 'text-[#edc14d]' : 'text-[#8A9490] hover:text-[#1C1C1C]'
                                   }`}
                                   id={`mobile-nav-${child.id}`}
                                 >
                                   {child.label}
-                                </button>
+                                </Link>
                               ))}
                             </div>
                           </motion.div>
@@ -258,19 +271,23 @@ export default function Header({ currentView, setView, cartCount, onCartClick }:
                 }
 
                 return (
-                  <motion.button
+                  <motion.div
                     key={item.id}
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: index * 0.05 }}
-                    onClick={() => handleNavClick(item.id)}
-                    className={`text-left font-serif text-3xl font-medium tracking-wide border-b border-black/8 pb-3 transition-colors ${
+                  >
+                  <Link
+                    href={VIEW_PATHS[item.id]}
+                    onClick={handleNavClick}
+                    className={`block text-left font-serif text-3xl font-medium tracking-wide border-b border-black/8 pb-3 transition-colors ${
                       active ? 'text-[#edc14d]' : 'text-[#556260] hover:text-[#1C1C1C]'
                     }`}
                     id={`mobile-nav-${item.id}`}
                   >
                     {item.label}
-                  </motion.button>
+                  </Link>
+                  </motion.div>
                 );
               })}
             </div>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Bookmark, ArrowRight, Check, Sparkles, BookOpen, Clock, User, Share2 } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowLeft, Bookmark, ArrowRight, Sparkles, Clock, Share2 } from 'lucide-react';
 import { Article } from '../types';
 import { ARTICLES } from '../data';
+import { API_BASE, normalizeStory } from '../lib/api';
+import { articlePath } from '../lib/routes';
 import { motion, AnimatePresence } from 'motion/react';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
 
 function extractYoutubeId(url?: string): string | null {
   if (!url) return null;
@@ -17,52 +19,37 @@ function stripHtml(html: string): string {
 }
 
 interface JournalViewProps {
-  selectedArticleId: string | null;
-  setSelectedArticleId: (id: string | null) => void;
+  initialStories: Article[];
+  /** Slug from /journal/[slug]; when set, the full story is shown. */
+  selectedArticleSlug: string | null;
 }
 
-export default function JournalView({ selectedArticleId, setSelectedArticleId }: JournalViewProps) {
+export default function JournalView({ initialStories, selectedArticleSlug }: JournalViewProps) {
   const [activeTag, setActiveTag] = useState<'all' | 'recipes' | 'nutrition' | 'mindfulness' | 'sustainability' | 'media'>('all');
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
   const [shareFeedbackId, setShareFeedbackId] = useState<string | null>(null);
-  const [apiStories, setApiStories] = useState<Article[]>([]);
+  // Stories are rendered on the server; only refetch in the browser if the server had none.
+  const [apiStories, setApiStories] = useState<Article[]>(initialStories);
 
   // Auto-scroll to top when reading an article
   useEffect(() => {
-    if (selectedArticleId) {
+    if (selectedArticleSlug) {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
-  }, [selectedArticleId]);
+  }, [selectedArticleSlug]);
 
-  // Fetch stories from API (non-blocking — mock data stays visible on failure)
   useEffect(() => {
+    if (initialStories.length > 0) return;
     fetch(`${API_BASE}/explore/stories`)
       .then(res => res.json())
       .then(json => {
         if (!Array.isArray(json.data)) return;
-        const normalized: Article[] = json.data.map((s: any) => ({
-          id: `api_${s.slug}`,
-          slug: s.slug,
-          title: s.title,
-          excerpt: s.excerpt ?? '',
-          content: s.content ?? '',
-          category: s.type as Article['category'],
-          categoryLabel: s.category_label ?? s.type,
-          readTime: '',
-          date: s.date ?? '',
-          author: '',
-          image: s.image ?? s.youtube_thumbnail ?? '',
-          featured: !!s.featured,
-          youtube_url: s.youtube_url ?? undefined,
-          youtube_thumbnail: s.youtube_thumbnail ?? undefined,
-          isHtmlContent: true,
-        }));
-        setApiStories(normalized);
+        setApiStories(json.data.map(normalizeStory));
       })
-      .catch(() => {}); // silently ignore — mock data is the fallback
-  }, []);
+      .catch(() => {});
+  }, [initialStories.length]);
 
   const toggleBookmark = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -73,12 +60,12 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
     }
   };
 
-  const handleShare = (id: string, e: React.MouseEvent) => {
+  const handleShare = (article: Article, e: React.MouseEvent) => {
     e.stopPropagation();
-    setShareFeedbackId(id);
+    setShareFeedbackId(article.id);
     setTimeout(() => setShareFeedbackId(null), 3000);
     // write to clipboard
-    navigator.clipboard.writeText(`${window.location.origin}/?article=${id}`);
+    navigator.clipboard.writeText(`${window.location.origin}${articlePath(article.slug ?? article.id)}`);
   };
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
@@ -99,21 +86,21 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
   });
 
   // Specific article expansion view
-  if (selectedArticleId) {
-    const article = allArticles.find(art => art.id === selectedArticleId);
+  if (selectedArticleSlug) {
+    const article = allArticles.find(art => art.slug === selectedArticleSlug);
     if (article) {
       return (
         <article className="min-h-screen bg-[#F7F4EF] text-[#1C1C1C] pt-28 pb-24 px-6">
           <div className="max-w-3xl mx-auto space-y-8">
             {/* Back Button */}
-            <button
-              onClick={() => setSelectedArticleId(null)}
-              className="flex items-center gap-2 text-[#edc14d] hover:text-[#1C1C1C] font-sans text-xs tracking-widest font-semibold uppercase group cursor-pointer"
+            <Link
+              href="/journal"
+              className="flex w-fit items-center gap-2 text-[#edc14d] hover:text-[#1C1C1C] font-sans text-xs tracking-widest font-semibold uppercase group cursor-pointer"
               id="back-to-journal-btn"
             >
               <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
               BACK TO JOURNAL
-            </button>
+            </Link>
 
             {/* Header Meta */}
             <div className="space-y-4">
@@ -149,12 +136,14 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
                 <div className="flex items-center gap-2">
                   <button
                     onClick={(e) => toggleBookmark(article.id, e)}
+                    aria-label="Bookmark"
                     className="p-2 rounded-full hover:bg-black/5 text-[#edc14d] cursor-pointer"
                   >
                     <Bookmark size={18} className={bookmarkedIds.includes(article.id) ? 'fill-current' : ''} />
                   </button>
                   <button
-                    onClick={(e) => handleShare(article.id, e)}
+                    onClick={(e) => handleShare(article, e)}
+                    aria-label="Copy link"
                     className="p-2 rounded-full hover:bg-black/5 text-[#edc14d] relative cursor-pointer"
                   >
                     <AnimatePresence>
@@ -186,8 +175,10 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
                 />
               </div>
             ) : (
-              <div className="w-full h-[320px] md:h-[480px] rounded-3xl overflow-hidden border border-black/8">
-                <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+              <div className="relative w-full h-[320px] md:h-[480px] rounded-3xl overflow-hidden border border-black/8">
+                {article.image && (
+                  <Image src={article.image} alt={article.title} fill priority sizes="(max-width: 768px) 100vw, 768px" className="object-cover" />
+                )}
               </div>
             )}
 
@@ -315,20 +306,24 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
               return (
                 <div
                   key={article.id}
-                  onClick={() => setSelectedArticleId(article.id)}
-                  className="group bg-[#013120]/6 hover:bg-[#013120]/10 border border-black/8 rounded-3xl overflow-hidden cursor-pointer flex flex-col justify-between transition-all duration-300"
+                  className="group relative bg-[#013120]/6 hover:bg-[#013120]/10 border border-black/8 rounded-3xl overflow-hidden cursor-pointer flex flex-col justify-between transition-all duration-300"
                 >
                   <div className="space-y-6">
                     {/* Image frame */}
                     <div className="aspect-[16/10] overflow-hidden relative">
-                      <img
-                        src={article.image}
-                        alt={article.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
-                      />
+                      {article.image && (
+                        <Image
+                          src={article.image}
+                          alt={article.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 600px"
+                          className="object-cover transition-transform duration-700 group-hover:scale-103"
+                        />
+                      )}
                       <button
-                        onClick={(e) => toggleBookmark(article.id, e)}
-                        className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-[#edc14d] hover:bg-black p-2 rounded-full border border-white/10 transition-colors"
+                        aria-label="Bookmark"
+                        onClick={(e) => { e.preventDefault(); toggleBookmark(article.id, e); }}
+                        className="absolute z-10 top-4 right-4 bg-black/60 backdrop-blur-md text-[#edc14d] hover:bg-black p-2 rounded-full border border-white/10 transition-colors"
                       >
                         <Bookmark size={15} className={isBookmarked ? 'fill-current' : ''} />
                       </button>
@@ -346,7 +341,10 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
                       </div>
 
                       <h3 className="font-serif text-2xl font-medium text-[#1C1C1C] group-hover:text-[#edc14d] transition-colors leading-snug">
-                        {article.title}
+                        {/* The stretched link makes the whole card clickable while keeping a real, crawlable <a href>. */}
+                        <Link href={articlePath(article.slug ?? article.id)} className="after:absolute after:inset-0 after:content-['']">
+                          {article.title}
+                        </Link>
                       </h3>
 
                       <p className="font-sans text-xs text-[#556260] line-clamp-3 leading-relaxed font-light">
@@ -358,15 +356,11 @@ export default function JournalView({ selectedArticleId, setSelectedArticleId }:
                   {/* Footer card action */}
                   <div className="px-8 pb-8 pt-6 flex items-center justify-between border-t border-black/8 mt-6">
                     {article.category === 'recipes' ? (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedArticleId(article.id);
-                        }}
+                      <span
                         className="bg-[#FDD05A] hover:bg-[#edc14d] text-[#362800] px-5 py-2.5 rounded-full font-sans text-[10px] tracking-widest uppercase font-bold hover:scale-105 active:scale-95 transition-all text-center"
                       >
                         View Recipe
-                      </button>
+                      </span>
                     ) : article.category === 'mindfulness' ? (
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-5 rounded-full bg-[#013120]/6 flex items-center justify-center text-xs">🌱</div>

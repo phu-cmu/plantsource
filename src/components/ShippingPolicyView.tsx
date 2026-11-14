@@ -8,12 +8,12 @@ export default function ShippingPolicyView() {
 
         {/* Header */}
         <section className="text-center space-y-4">
-          <h1 className="font-serif text-[#edc14d] text-xs font-bold tracking-widest uppercase">
+          <p className="font-serif text-[#edc14d] text-xs font-bold tracking-widest uppercase">
             Plantsource Wholesale
-          </h1>
-          <h2 className="font-serif text-4xl md:text-5xl text-[#1C1C1C] font-bold leading-tight">
+          </p>
+          <h1 className="font-serif text-4xl md:text-5xl text-[#1C1C1C] font-bold leading-tight">
             Shipping Policy
-          </h2>
+          </h1>
           <div className="w-16 h-1 bg-[#edc14d] rounded-full mx-auto" />
         </section>
 
