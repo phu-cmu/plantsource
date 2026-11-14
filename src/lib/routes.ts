@@ -45,4 +45,23 @@ export const articlePath = (slug: string) => `/journal/${encodeURIComponent(slug
 
 export type CategoryFilter = 'all' | 'produce' | 'pantry' | 'meals';
 export const VALID_CATEGORIES: CategoryFilter[] = ['produce', 'pantry', 'meals'];
-export const shopCategoryPath = (cat: CategoryFilter) => (cat === 'all' ? '/shop' : `/shop?category=${cat}`);
+/** Products shown per page on /shop. */
+export const SHOP_PAGE_SIZE = 6;
+
+/** Query string for the shop list state, e.g. "?category=pantry&page=2" (empty for page 1 / all). */
+export function shopListQuery(cat: CategoryFilter, page = 1): string {
+  const params = new URLSearchParams();
+  if (cat !== 'all') params.set('category', cat);
+  if (page > 1) params.set('page', String(page));
+  const qs = params.toString();
+  return qs ? `?${qs}` : '';
+}
+
+export const shopListPath = (cat: CategoryFilter, page = 1) => `/shop${shopListQuery(cat, page)}`;
+export const shopCategoryPath = (cat: CategoryFilter) => shopListPath(cat);
+
+/** Reads a positive page number from a query value; anything invalid means page 1. */
+export function parsePage(value: string | null): number {
+  const n = Number(value);
+  return Number.isInteger(n) && n > 1 ? n : 1;
+}

@@ -6,7 +6,7 @@ import { Search, ShoppingBasket, Eye, X, Sparkles, ChevronLeft, ChevronRight } f
 import { Product } from '../types';
 import { PRODUCTS } from '../data';
 import { API_BASE, normalizeProduct } from '../lib/api';
-import { CategoryFilter, productPath, shopCategoryPath } from '../lib/routes';
+import { CategoryFilter, productPath, shopListPath, shopListQuery, SHOP_PAGE_SIZE } from '../lib/routes';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ShopViewProps {
@@ -16,9 +16,24 @@ interface ShopViewProps {
   onAddToCart: (product: Product, quantity: number) => void;
   /** Slug from /shop/[slug]; when set, the product detail is shown. */
   selectedProductSlug: string | null;
+  /** 1-based page number from ?page= */
+  currentPage: number;
 }
 
-export default function ShopView({ initialProducts, categoryFilter, setCategoryFilter, onAddToCart, selectedProductSlug }: ShopViewProps) {
+/** Page numbers to show, with '…' gaps when there are many pages: 1 … 4 5 6 … 14 */
+function getPageNumbers(current: number, total: number): (number | '…')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | '…')[] = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) pages.push('…');
+  for (let p = start; p <= end; p++) pages.push(p);
+  if (end < total - 1) pages.push('…');
+  pages.push(total);
+  return pages;
+}
+
+export default function ShopView({ initialProducts, categoryFilter, setCategoryFilter, onAddToCart, selectedProductSlug, currentPage }: ShopViewProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'default' | 'nameAsc' | 'nameDesc'>('default');
@@ -43,8 +58,14 @@ export default function ShopView({ initialProducts, categoryFilter, setCategoryF
     ? [...PRODUCTS, ...apiProducts].find(p => p.slug === selectedProductSlug) ?? null
     : null;
 
+  // Return to the same category + page the product was opened from.
   const closeProduct = () => {
-    router.push(shopCategoryPath(categoryFilter), { scroll: false });
+    router.push(shopListPath(categoryFilter, currentPage), { scroll: false });
+  };
+
+  // Search, brand and sort change the result set, so go back to page 1.
+  const resetPage = () => {
+    if (currentPage > 1) router.replace(shopListPath(categoryFilter, 1), { scroll: false });
   };
 
   useEffect(() => {
@@ -88,6 +109,12 @@ export default function ShopView({ initialProducts, categoryFilter, setCategoryF
     if (sortBy === 'nameDesc') return b.name.localeCompare(a.name);
     return 0;
   });
+
+  // Pagination: SHOP_PAGE_SIZE products per page
+  const totalPages = Math.max(1, Math.ceil(sortedProducts.length / SHOP_PAGE_SIZE));
+  const page = Math.min(Math.max(1, currentPage), totalPages);
+  const pageProducts = sortedProducts.slice((page - 1) * SHOP_PAGE_SIZE, page * SHOP_PAGE_SIZE);
+  const listQuery = shopListQuery(categoryFilter, page);
 
   return (
     <div className="min-h-screen bg-[#F7F4EF] text-[#1C1C1C] pt-28 pb-24">
@@ -141,13 +168,14 @@ export default function ShopView({ initialProducts, categoryFilter, setCategoryF
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => { setSearchQuery(e.target.value); resetPage(); }}
                 placeholder="Search products..."
                 className="w-full bg-[#013120]/6 border border-black/10 rounded-full py-2.5 pl-11 pr-4 text-xs focus:outline-none focus:border-[#edc14d] text-[#1C1C1C]"
               />
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => { setSearchQuery(''); resetPage(); }}
+                  aria-label="Clear search"
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A9490] hover:text-[#1C1C1C]"
                 >
                   <X size={14} />
@@ -158,7 +186,7 @@ export default function ShopView({ initialProducts, categoryFilter, setCategoryF
             {/* Brand filter */}
             <select
               value={brandFilter}
-              onChange={(e) => setBrandFilter(e.target.value)}
+              onChange={(e) => { setBrandFilter(e.target.value); resetPage(); }}
               className="bg-[#013120]/6 border border-black/10 rounded-full py-2.5 px-4 text-xs focus:outline-none focus:border-[#edc14d] text-[#1C1C1C] cursor-pointer shrink-0"
             >
               <option value="all" className="bg-[#F0EDE8] text-[#1C1C1C]">All Brands</option>
@@ -170,7 +198,7 @@ export default function ShopView({ initialProducts, categoryFilter, setCategoryF
             {/* Sort */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => { setSortBy(e.target.value as any); resetPage(); }}
               className="bg-[#013120]/6 border border-black/10 rounded-full py-2.5 px-4 text-xs focus:outline-none focus:border-[#edc14d] text-[#1C1C1C] cursor-pointer shrink-0"
             >
               <option value="default" className="bg-[#F0EDE8] text-[#1C1C1C]">Default</option>
@@ -191,15 +219,16 @@ export default function ShopView({ initialProducts, categoryFilter, setCategoryF
             </p>
           </div>
         ) : (
+          <div className="space-y-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <AnimatePresence mode="popLayout" initial={false}>
-              {sortedProducts.map((product, index) => (
-                <motion.div
+            {/* Plain elements (no enter/exit animation): animating the swap from the server-rendered
+                page 1 to ?page=N / ?category= after hydration left stale cards on screen. */}
+              {pageProducts.map((product, index) => (
+                <div
                   key={product.id}
-                  layoutId={`prod-card-${product.id}`}
                   className="group bg-[#013120]/6 border border-black/8 rounded-3xl overflow-hidden cursor-pointer flex flex-col justify-between transition-all duration-300 hover:scale-[1.01] hover:border-black/12"
                 >
-                  <Link href={productPath(product.slug ?? product.id)} scroll={false} className="block space-y-4">
+                  <Link href={`${productPath(product.slug ?? product.id)}${listQuery}`} scroll={false} className="block space-y-4">
                     {/* Visual box */}
                     <div className="aspect-[4/3] overflow-hidden relative bg-black/40">
                       <Image
@@ -242,9 +271,62 @@ export default function ShopView({ initialProducts, categoryFilter, setCategoryF
                     </div>
                   </Link>
 
-                </motion.div>
+                </div>
               ))}
-            </AnimatePresence>
+          </div>
+
+          {/* Pagination — real links so every page is crawlable and shareable */}
+          {totalPages > 1 && (
+            <nav aria-label="Product pages" className="flex flex-wrap items-center justify-center gap-2">
+              {page > 1 ? (
+                <Link
+                  href={shopListPath(categoryFilter, page - 1)}
+                  aria-label="Previous page"
+                  className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center text-[#556260] hover:border-[#edc14d] hover:text-[#1C1C1C] transition-colors"
+                >
+                  <ChevronLeft size={16} />
+                </Link>
+              ) : (
+                <span aria-hidden="true" className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center text-[#556260] opacity-30">
+                  <ChevronLeft size={16} />
+                </span>
+              )}
+
+              {getPageNumbers(page, totalPages).map((p, i) =>
+                p === '…' ? (
+                  <span key={`gap-${i}`} className="w-6 text-center font-sans text-xs text-[#8A9490]">…</span>
+                ) : (
+                  <Link
+                    key={p}
+                    href={shopListPath(categoryFilter, p)}
+                    aria-label={`Page ${p}`}
+                    aria-current={p === page ? 'page' : undefined}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-sans text-xs font-bold transition-colors ${
+                      p === page
+                        ? 'bg-[#edc14d] text-[#362800] border border-[#edc14d]'
+                        : 'border border-black/10 text-[#556260] hover:border-[#edc14d] hover:text-[#1C1C1C]'
+                    }`}
+                  >
+                    {p}
+                  </Link>
+                ),
+              )}
+
+              {page < totalPages ? (
+                <Link
+                  href={shopListPath(categoryFilter, page + 1)}
+                  aria-label="Next page"
+                  className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center text-[#556260] hover:border-[#edc14d] hover:text-[#1C1C1C] transition-colors"
+                >
+                  <ChevronRight size={16} />
+                </Link>
+              ) : (
+                <span aria-hidden="true" className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center text-[#556260] opacity-30">
+                  <ChevronRight size={16} />
+                </span>
+              )}
+            </nav>
+          )}
           </div>
         )}
 

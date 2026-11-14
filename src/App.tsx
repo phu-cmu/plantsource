@@ -12,23 +12,25 @@ import ShippingPolicyView from './components/ShippingPolicyView';
 import CartDrawer from './components/CartDrawer';
 import { ViewType, Product, Article, CartItem } from './types';
 import { SiteSettings, DEFAULT_SETTINGS } from './lib/api';
-import { parseRoute, CategoryFilter, VALID_CATEGORIES, shopCategoryPath } from './lib/routes';
+import { parseRoute, CategoryFilter, VALID_CATEGORIES, shopListPath, parsePage } from './lib/routes';
 import { motion, AnimatePresence } from 'motion/react';
 
 // pdfjs-dist / canvas rendering only works in the browser — never render this on the server.
 const CatalogView = dynamic(() => import('./components/CatalogView'), { ssr: false });
 
 /**
- * Reads ?category= from the URL. Isolated in its own <Suspense> boundary so pages can be
- * statically generated: useSearchParams only opts this tiny null-rendering component out of
- * static rendering, instead of the whole page.
+ * Reads ?category= and ?page= from the URL. Isolated in its own <Suspense> boundary so pages
+ * can be statically generated: useSearchParams only opts this tiny null-rendering component out
+ * of static rendering, instead of the whole page.
  */
-function CategorySync({ onChange }: { onChange: (cat: CategoryFilter) => void }) {
+function ListParamsSync({ onChange }: { onChange: (cat: CategoryFilter, page: number) => void }) {
   const searchParams = useSearchParams();
-  const param = searchParams.get('category');
+  const categoryParam = searchParams.get('category');
+  const pageParam = searchParams.get('page');
   useEffect(() => {
-    onChange(VALID_CATEGORIES.includes(param as CategoryFilter) ? (param as CategoryFilter) : 'all');
-  }, [param, onChange]);
+    const cat = VALID_CATEGORIES.includes(categoryParam as CategoryFilter) ? (categoryParam as CategoryFilter) : 'all';
+    onChange(cat, parsePage(pageParam));
+  }, [categoryParam, pageParam, onChange]);
   return null;
 }
 
@@ -45,10 +47,18 @@ export default function App({ initialProducts = [], initialStories = [], initial
   const view: ViewType = route.view;
 
   const [categoryFilter, setCategoryFilterState] = useState<CategoryFilter>('all');
+  const [shopPage, setShopPage] = useState(1);
 
+  const syncListParams = useCallback((cat: CategoryFilter, page: number) => {
+    setCategoryFilterState(cat);
+    setShopPage(page);
+  }, []);
+
+  // Changing category always goes back to page 1.
   const setCategoryFilter = useCallback((cat: CategoryFilter) => {
     setCategoryFilterState(cat);
-    router.replace(shopCategoryPath(cat), { scroll: false });
+    setShopPage(1);
+    router.replace(shopListPath(cat, 1), { scroll: false });
   }, [router]);
 
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -117,7 +127,7 @@ export default function App({ initialProducts = [], initialStories = [], initial
   return (
     <div className="min-h-screen bg-[#121414] text-[#e2e2e2] font-sans selection:bg-[#FDD05A] selection:text-[#362800] antialiased">
       <Suspense fallback={null}>
-        <CategorySync onChange={setCategoryFilterState} />
+        <ListParamsSync onChange={syncListParams} />
       </Suspense>
 
       {/* Floating Navbar */}
@@ -152,6 +162,7 @@ export default function App({ initialProducts = [], initialStories = [], initial
                 initialProducts={initialProducts}
                 categoryFilter={categoryFilter}
                 setCategoryFilter={setCategoryFilter}
+                currentPage={shopPage}
                 onAddToCart={handleAddToCart}
                 selectedProductSlug={route.productSlug ?? null}
               />
